@@ -121,7 +121,8 @@ STATIC_URL = 'static/'
 
 AUTH_USER_MODEL = 'accounts.User'
 
+# Allow these addresses (Frontend) to talk to this Backend 
 CORS_ALLOWED_ORIGINS = ['*']
 
-# Allow the browser to send cookies (we use sessions auth -> requires Session ID)
+# CRITICAL: Allow the browser to send cookies (we use sessions auth -> requires Session ID)
 CORS_ALLOWED_CREDENTIALS = True
