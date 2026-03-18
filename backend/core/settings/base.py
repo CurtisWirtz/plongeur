@@ -5,7 +5,17 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
+# REST API
+# https://www.django-rest-framework.org/api-guide/renderers/#installation-configuration_2
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated', # only authenticated users can gain access, for views that allow non-auth users - permissions are handled in that view
+    ),
+}
 
 
 # Application definition
@@ -17,6 +27,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework'
     'corsheaders',
     'accounts',
 ]
