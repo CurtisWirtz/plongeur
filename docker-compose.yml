@@ -49,15 +49,15 @@ services:
    volumes:
      - pgadmin_data:/var/lib/pgadmin # To persist the pgAdmin config and server list
 
-#  frontend:
-#    build:
-#      context: ./frontend
-#      dockerfile: Dockerfile.dev
-#    container_name: vite-frontend
-#    ports:
-#      - "5173:5173"
-#    volumes:
-#      - ./frontend:/app
+ frontend:
+   build:
+     context: ./frontend
+     dockerfile: Dockerfile.dev
+   container_name: vite-frontend
+   ports:
+     - "5173:5173"
+   volumes:
+     - ./frontend:/app
 
 volumes:
    postgres_data:
