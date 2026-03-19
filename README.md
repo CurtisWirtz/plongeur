@@ -6,6 +6,7 @@ Clone this repository: `git clone git@github.com:CurtisWirtz/plongeur
 Create a copy of `.env.example` named `.env` in the root directory.
 
 With [Docker](https://www.docker.com/) installed, run `docker compose up --build` in this project's root directory.
+NOTE: appending `--remove-orphans` will prune old containers that are no longer required.
 
 This will build and run containers for PostgreSQL, Django, and Node.js.
 Note: Port `5432` must be available for Postgres.
@@ -39,3 +40,8 @@ Host: db (This is the service name of the PostgreSQL container)
 Port: 5432
 Username: ${DATABASE_USERNAME} (from the .env file)
 Password: ${DATABASE_PASSWORD}
+
+
+# TODOS:
+- docker Prune Cronjob: every night at 3:00 AM ...using bash? `0 3 * * * /usr/bin/docker system prune -af --volumes`
+    (addresses the remnant <none> containers that could accumulate and burn up bandwidth)
