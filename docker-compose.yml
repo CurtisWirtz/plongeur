@@ -54,6 +54,9 @@ services:
      context: ./frontend
      dockerfile: Dockerfile.dev
    container_name: vite-frontend
+   environment:
+     VITE_API_URL: ${VITE_API_URL}
+     VITE_ENVIRONMENT: ${DJANGO_ENV}
    ports:
      - "5173:5173"
    volumes:
