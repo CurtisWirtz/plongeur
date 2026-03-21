@@ -41,7 +41,20 @@ Port: 5432
 Username: ${DATABASE_USERNAME} (from the .env file)
 Password: ${DATABASE_PASSWORD}
 
+# Useful commands:
+`docker compose exec frontend printenv | grep VITE` tests to see if env variables successfully loaded into the frontend container with the word 'VITE' attached
 
 # TODOS:
-- docker Prune Cronjob: every night at 3:00 AM ...using bash? `0 3 * * * /usr/bin/docker system prune -af --volumes`
+1. Setup API for session auth:
+
+configure session auth views with DRF
+
+Frontend adds:
+-react query
+-react-hook-form
+-zod
+
+2. docker prune cronjob: every night at 3:00 AM ...using bash? `0 3 * * * /usr/bin/docker system prune -af --volumes`
     (addresses the remnant <none> containers that could accumulate and burn up bandwidth)
+
+    in the meantime, running `docker image prune` will cleanse the dangling containers - they tend to be 0B large anyways...
