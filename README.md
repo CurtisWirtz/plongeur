@@ -1,7 +1,7 @@
 # Plongeur
 
 ### Basic instructions for local development:
-Clone this repository: `git clone git@github.com:CurtisWirtz/plongeur
+Clone this repository: `git clone git@github.com:CurtisWirtz/plongeur`
 
 Create a copy of `.env.example` named `.env` in the root directory.
 
