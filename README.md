@@ -36,6 +36,8 @@ http://localhost:8080
 
 Log in to PGAdmin4 using the values of PGADMIN_DEFAULT_EMAIL and PGADMIN_DEFAULT_PASSWORD.
 Register a new server connection:
+name: plongeur (or whatever)
+Go to Connection tab:
 Host: db (This is the service name of the PostgreSQL container)
 Port: 5432
 Username: ${DATABASE_USERNAME} (from the .env file)

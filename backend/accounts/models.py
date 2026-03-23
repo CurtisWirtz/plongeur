@@ -25,7 +25,7 @@ class User(AbstractUser):
 
     # Use email instead of username (which is required for registration - we're basically doing away with username)
     USERNAME_FIELD = "email"
-    # Require  for superusers.
+    # Require email for superusers.
     REQUIRED_FIELDS = []
 
     # The ORM uses our custom manager for User.objects
