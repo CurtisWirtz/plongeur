@@ -1,10 +1,12 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth import authenticate, login
+
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
@@ -39,3 +41,13 @@ class LoginView(APIView):
 
         # Fail gracefully
         return Response({"message": "Invalid credentials."}, status=status.HTTP_401_UNAUTHORIZED)
+
+# Quick auth check endpoint - the frontend can call this on app and page load to check if the user has a valid session cookie, then return their user info
+@api_view(['GET'])
+@ensure_csrf_cookie
+@permission_classes([IsAuthenticated])
+def get_session_user(request):
+    return Response({
+        "id": request.user.id,
+        "email": request.user.email
+    })
