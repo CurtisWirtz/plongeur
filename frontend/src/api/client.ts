@@ -5,6 +5,7 @@ const api = axios.create({
     withCredentials: true, // Include cookies for auth (must be set to true)
     xsrfCookieName: "csrftoken",
     xsrfHeaderName: "X-CSRFToken",
+    withXSRFToken: true, // Ensure CSRF token is included in requests
 })
 
 export default api;
