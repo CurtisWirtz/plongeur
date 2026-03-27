@@ -1,7 +1,7 @@
 import { useNavigate } from '@tanstack/react-router'
-import api from '../api/client'
+import api from '@/api/client'
 // import loginSchema from '../schemas/auth'
-import type { LoginSchemaType } from '../schemas/auth'
+import type { LoginSchemaType } from '@/schemas/auth'
 import { useMutation } from '@tanstack/react-query'
 
 const useLogin = () => {
