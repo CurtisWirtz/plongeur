@@ -20,9 +20,9 @@ class LoginView(APIView):
 
         # Input fallbacks
         if not email:
-            return Response({"message": "Email required."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "Email required."}, status=status.HTTP_400_BAD_REQUEST)
         if not password:
-            return Response({"message": "Password required."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "Password required."}, status=status.HTTP_400_BAD_REQUEST)
         
         # Check the user credentials
         user = authenticate(request, email=email, password=password)
@@ -33,14 +33,14 @@ class LoginView(APIView):
 
             # Send back the user info in the response body so the frontend can store it in state and display it
             return Response({
-                "message": "Successfully logged in.",
+                "detail": "Successfully logged in.",
                 "user": {
                     "email": user.email,
                 }
             }, status=status.HTTP_200_OK)
 
         # Fail gracefully
-        return Response({"message": "Invalid credentials."}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({"detail": "Invalid credentials."}, status=status.HTTP_401_UNAUTHORIZED)
 
 @api_view(['GET'])
 @ensure_csrf_cookie
@@ -63,5 +63,6 @@ def logout_user(request):
     Logout - the frontend COULD just delete the sessionid cookie, BUT...
     We want to destroy the session in the DB (and clear the cookie)... which changes the state, and thus we use a POST request
     """
+    print(f"Logging out user: {request.user.email}")
     logout(request)
-    return Response({"message": "Successfully logged out."}, status=200)
+    return Response({"detail": f"Successfully logged out {request.user.email}"}, status=200)
