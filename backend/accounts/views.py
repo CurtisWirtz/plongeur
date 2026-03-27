@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 
 
 class LoginView(APIView):
@@ -42,12 +42,26 @@ class LoginView(APIView):
         # Fail gracefully
         return Response({"message": "Invalid credentials."}, status=status.HTTP_401_UNAUTHORIZED)
 
-# Quick auth check endpoint - the frontend can call this on app and page load to check if the user has a valid session cookie, then return their user info
 @api_view(['GET'])
 @ensure_csrf_cookie
 @permission_classes([IsAuthenticated])
 def get_session_user(request):
+    """
+    Quick auth check endpoint:
+    The frontend can call this on app or page load to check if the user has a valid session, then return that user's info
+    """
     return Response({
         "id": request.user.id,
         "email": request.user.email
     })
+
+@api_view(['POST'])
+@ensure_csrf_cookie
+@permission_classes([IsAuthenticated]) # Only for logged-in users
+def logout_user(request):
+    """    
+    Logout - the frontend COULD just delete the sessionid cookie, BUT...
+    We want to destroy the session in the DB (and clear the cookie)... which changes the state, and thus we use a POST request
+    """
+    logout(request)
+    return Response({"message": "Successfully logged out."}, status=200)
