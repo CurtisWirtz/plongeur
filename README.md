@@ -47,16 +47,23 @@ Password: ${DATABASE_PASSWORD}
 `docker compose exec frontend printenv | grep VITE` tests to see if env variables successfully loaded into the frontend container with the word 'VITE' attached
 
 # TODOS:
-1. Setup API for session auth:
+-create new user (register)
+   - view
+   - serializer
+   - url
+   - route, component, form to register new user
 
-configure session auth views with DRF
+   once successful...
+ -final flow:
+    -first, register email (it holds for 24 hours)
+       - OTP model
+       - also checks if the email is already registered
+    - email verification is sent 
+       - if email link is clicked, they're prompted to create the user... set password, phone number, name..etc
 
-Frontend adds:
--react query
--react-hook-form
--zod
+- 404 page: (notFoundComponent on frontend)
 
-2. docker prune cronjob: every night at 3:00 AM ...using bash? `0 3 * * * /usr/bin/docker system prune -af --volumes`
+- docker prune cronjob: every night at 3:00 AM ...using bash? `0 3 * * * /usr/bin/docker system prune -af --volumes`
     (addresses the remnant <none> containers that could accumulate and burn up bandwidth)
 
     in the meantime, running `docker image prune` will cleanse the dangling containers - they tend to be 0B large anyways...
