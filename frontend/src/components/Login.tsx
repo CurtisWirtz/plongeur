@@ -1,8 +1,10 @@
 import { useNavigate } from '@tanstack/react-router'
 import api from '@/api/client'
-// import loginSchema from '../schemas/auth'
+import { loginSchema } from '@/schemas/auth'
 import type { LoginSchemaType } from '@/schemas/auth'
 import { useMutation } from '@tanstack/react-query'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 
 const useLogin = () => {
     const navigate = useNavigate()
@@ -25,26 +27,51 @@ const useLogin = () => {
 const Login = () => {
   const { mutate, isPending, error } = useLogin()
 
-  const handleRawSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const formData = new FormData(e.currentTarget)
-    const email = formData.get('email') as string
-    const password = formData.get('password') as string
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginSchemaType>({
+    resolver: zodResolver(loginSchema),
+  })
 
+  const onSubmit = (data: LoginSchemaType) => {
     // Fire the mutation from the useLogin hook
-    mutate({ email, password })
+    mutate(data)
   }
 
   return (
     <div style={{ border: '1px solid #ccc', padding: '1rem', maxWidth: '300px' }}>
-      <h3>Login (Basic Version)</h3>
-      <form onSubmit={handleRawSubmit}>
-        <input name="email" type="email" placeholder="Email" required />
-        <br /><br />
-        <input name="password" type="password" placeholder="Password" required />
-        <br /><br />
+      <h3>Please Log In</h3>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div>
+          <input 
+            {...register('email')} 
+            type="email" 
+            placeholder="Email" 
+          />
+          {errors.email && (
+            <p style={{ color: 'orange', fontSize: '0.8rem' }}>{errors.email.message}</p>
+          )}
+        </div>
+
+        <br />
+        
+        <div>
+          <input 
+            {...register('password')} 
+            type="password" 
+            placeholder="Password" 
+          />
+          {errors.password && (
+            <p style={{ color: 'orange', fontSize: '0.8rem' }}>{errors.password.message}</p>
+          )}
+        </div>
+
+        <br />
+
         <button type="submit" disabled={isPending}>
-          {isPending ? 'Connecting...' : 'Login'}
+          {isPending ? 'Logging in...' : 'Login'}
         </button>
       </form>
       {error && <p style={{ color: 'red' }}>Login Failed: {error.message}</p>}
