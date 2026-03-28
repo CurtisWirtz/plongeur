@@ -8,7 +8,9 @@ const useLogout = () => {
 
   return useMutation({
     mutationFn: async () => {
-      return await api.post('/accounts/logout/')
+      const response = await api.post('/accounts/logout/')
+      console.log("Successfully logged out:", response)
+      return response.data
     },
     onSuccess: () => {
       queryClient.clear() // destroys all cached data 
@@ -23,8 +25,8 @@ const useLogout = () => {
 export function LogoutButton() {
   const { mutate, isPending } = useLogout()
 
-  const handleSubmit = (e: React.SubmitEvent) => {
-    e.preventDefault() // Stop the page from reloading
+  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault() // Stop the page from reloading on form submission, we'll manually redirect on success
     mutate()
   }
 
