@@ -65,4 +65,4 @@ def logout_user(request):
     """
     print(f"Logging out user: {request.user.email}")
     logout(request)
-    return Response({"detail": f"Successfully logged out {request.user.email}"}, status=200)
+    return Response({"detail": f"Successfully logged out {request}"}, status=200)
