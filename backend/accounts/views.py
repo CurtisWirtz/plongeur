@@ -63,3 +63,16 @@ def logout_user(request):
     print(f"Logging out user: {request.user.email}")
     logout(request)
     return Response({"detail": "Successfully logged out."}, status=200)
+
+class RegisterView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = RegisterUserSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save() # calls create() in serializer
+            login(request, user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        # If invalid (e.g. email taken), it returns specific field errors
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
