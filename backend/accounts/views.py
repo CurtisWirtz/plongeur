@@ -6,6 +6,7 @@ from rest_framework.decorators import api_view, permission_classes
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth import authenticate, login, logout
+from .serializers import UserSerializer, RegisterUserSerializer
 
 
 class LoginView(APIView):
@@ -34,9 +35,7 @@ class LoginView(APIView):
             # Send back the user info in the response body so the frontend can store it in state and display it
             return Response({
                 "detail": "Successfully logged in.",
-                "user": {
-                    "email": user.email,
-                }
+                "user": UserSerializer(user).data,
             }, status=status.HTTP_200_OK)
 
         # Fail gracefully
@@ -50,10 +49,8 @@ def get_session_user(request):
     Quick auth check endpoint:
     The frontend can call this on app or page load to check if the user has a valid session, then return that user's info
     """
-    return Response({
-        "id": request.user.id,
-        "email": request.user.email
-    })
+    serializer = UserSerializer(request.user)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 @ensure_csrf_cookie
