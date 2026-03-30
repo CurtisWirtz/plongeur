@@ -69,10 +69,12 @@ class RegisterView(APIView):
 
     def post(self, request):
         serializer = RegisterUserSerializer(data=request.data)
+
+        # is_valid() will catch if the email is already in use
         if serializer.is_valid():
             user = serializer.save() # calls create() in serializer
             login(request, user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
-        # If invalid (e.g. email taken), it returns specific field errors
+        # If invalid, it returns specific field errors
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
