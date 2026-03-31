@@ -53,6 +53,12 @@ Password: ${DATABASE_PASSWORD}
    - url
    - route, component, form to register new user
 
+- apply Mantine or MUI or ShadCN or BaseUI?
+-create authenticated routes (maybe auth provider so we can get that state via context in the header to show current user/conditionally show buttons for login/logout)
+   - redirect to protected test route on login and register pages instead of bouncing to home
+
+-add honeypot, captcha? some more security for login/register
+
    once successful...
  -final flow:
     -first, register email (it holds for 24 hours)
