@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
-import { Outlet, createRootRoute, Link } from '@tanstack/react-router'
-import { TanStackRouterDevtools, ReactQueryDevtools } from '../lib/devTools'
+import { Outlet, createRootRoute } from '@tanstack/react-router'
+import { TanStackRouterDevtools, ReactQueryDevtools } from '@/lib/devTools'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 

@@ -3,7 +3,7 @@ import isAuthenticated from '@/api/auth'
 import Login from '@/components/Login'
 
 export const Route = createFileRoute('/login')({
-beforeLoad: async () => {
+  beforeLoad: async () => {
     const loggedIn = await isAuthenticated()
 
     if (loggedIn) {

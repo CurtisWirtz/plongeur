@@ -27,11 +27,7 @@ const useLogin = () => {
 const Login = () => {
   const { mutate, isPending, error } = useLogin()
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginSchemaType>({
+  const { register, handleSubmit, formState: { errors }, } = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
   })
 
