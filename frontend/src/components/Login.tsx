@@ -5,6 +5,7 @@ import type { LoginSchemaType } from '@/schemas/auth'
 import { useMutation } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import type { AxiosError } from 'axios'
 
 const useLogin = () => {
     const navigate = useNavigate()
@@ -18,18 +19,19 @@ const useLogin = () => {
             console.log("Login successful:", data);
             navigate({to: "/"})
         },
-        onError: (error) => {
-            console.error("Login failed:", error);
+        onError: (error: AxiosError<{ detail: string }>) => {
+            console.error("Login failed:", error.response?.data?.detail);
         },
     })
 }
 
 const Login = () => {
-  const { mutate, isPending, error } = useLogin()
-
   const { register, handleSubmit, formState: { errors }, } = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
+    shouldFocusError: true, // a11y, focus errors when they occur
   })
+
+  const { mutate, isPending, error } = useLogin()
 
   const onSubmit = (data: LoginSchemaType) => {
     // Fire the mutation from the useLogin hook
@@ -41,6 +43,11 @@ const Login = () => {
       <h3>Please Log In</h3>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>
+
+          {error?.response?.data?.detail && (
+            <p style={{ color: 'red', fontSize: '0.8rem' }}>{error.response.data?.detail}</p>
+          )}
+
           <input 
             {...register('email')} 
             type="email" 
@@ -70,7 +77,6 @@ const Login = () => {
           {isPending ? 'Logging in...' : 'Login'}
         </button>
       </form>
-      {error && <p style={{ color: 'red' }}>Login Failed: {error.message}</p>}
     </div>
   )
 }
