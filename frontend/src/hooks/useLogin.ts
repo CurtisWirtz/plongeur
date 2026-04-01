@@ -16,7 +16,11 @@ const useLogin = () => {
         },
         onSuccess: (data) => {
             console.log("Login successful:", data);
-            queryClient.setQueryData(['auth-user'], data.user) // Update the auth-user query with the logged-in User object/data
+            // Update the auth-user query with the logged-in User object/data
+            queryClient.setQueryData(['auth-user'], data.user) 
+            // other components looking at auth-user will know the data has changed
+            queryClient.invalidateQueries({ queryKey: ['auth-user'] })
+            
             navigate({to: "/"})
         },
         onError: (error: AxiosError<{ detail: string }>) => {
