@@ -1,4 +1,4 @@
-import LogoutButton from '@/components/LogoutButton'
+import Logout from '@/components/Logout'
 import { Link } from '@tanstack/react-router'
 
 const Header = () => {
@@ -10,7 +10,7 @@ const Header = () => {
         <div className="flex">
             <Link to="/login">Login</Link>
             <Link to="/register">Register</Link>
-            <LogoutButton />
+            <Logout />
         </div>
     </header>
 
