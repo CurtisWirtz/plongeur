@@ -47,12 +47,6 @@ Password: ${DATABASE_PASSWORD}
 `docker compose exec frontend printenv | grep VITE` tests to see if env variables successfully loaded into the frontend container with the word 'VITE' attached
 
 # TODOS:
--create new user (register)
-   - view
-   - serializer
-   - url
-   - route, component, form to register new user
-
 - apply Mantine or MUI or ShadCN or BaseUI?
 -create authenticated routes (maybe auth provider so we can get that state via context in the header to show current user/conditionally show buttons for login/logout)
    - redirect to protected test route on login and register pages instead of bouncing to home
@@ -69,7 +63,7 @@ Password: ${DATABASE_PASSWORD}
 
 - 404 page: (notFoundComponent on frontend)
 
-- docker prune cronjob: every night at 3:00 AM ...using bash? `0 3 * * * /usr/bin/docker system prune -af --volumes`
+- docker prune cronjob on production server: every night at 3:00 AM ...using bash? `0 3 * * * /usr/bin/docker system prune -af --volumes`
     (addresses the remnant <none> containers that could accumulate and burn up bandwidth)
 
     in the meantime, running `docker image prune` will cleanse the dangling containers - they tend to be 0B large anyways...
