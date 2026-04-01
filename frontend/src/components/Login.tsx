@@ -1,29 +1,9 @@
-import { useNavigate } from '@tanstack/react-router'
-import api from '@/api/client'
 import { loginSchema } from '@/schemas/auth'
 import type { LoginSchemaType } from '@/schemas/auth'
-import { useMutation } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import type { AxiosError } from 'axios'
+import useLogin from '@/hooks/useLogin'
 
-const useLogin = () => {
-    const navigate = useNavigate()
-
-    return useMutation({
-        mutationFn: async (data: LoginSchemaType) => {
-            const response = await api.post('/accounts/login/', data)
-            return response.data
-        },
-        onSuccess: (data) => {
-            console.log("Login successful:", data);
-            navigate({to: "/"})
-        },
-        onError: (error: AxiosError<{ detail: string }>) => {
-            console.error("Login failed:", error.response?.data?.detail);
-        },
-    })
-}
 
 const Login = () => {
   const { register, handleSubmit, formState: { errors }, } = useForm<LoginSchemaType>({
