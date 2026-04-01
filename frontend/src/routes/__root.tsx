@@ -1,16 +1,16 @@
 import { Suspense } from 'react'
-import { Outlet, createRootRoute, Link } from '@tanstack/react-router'
-import { TanStackRouterDevtools, ReactQueryDevtools } from '../lib/devTools'
-import LogoutButton from '@/components/LogoutButton'
+import { Outlet, createRootRoute } from '@tanstack/react-router'
+import { TanStackRouterDevtools, ReactQueryDevtools } from '@/lib/devTools'
+import Header from '@/components/Header'
+import Footer from '@/components/Footer'
+
 
 export const Route = createRootRoute({
   component: () => (
     <>
-      HEADER<br />
-      <Link to="/">Home</Link><Link to="/login">Login</Link><LogoutButton />
-      <br /><br />
+      <Header />
       <Outlet />
-      FOOTER<br />
+      <Footer />
 
       <Suspense>
         <TanStackRouterDevtools />

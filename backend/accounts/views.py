@@ -6,7 +6,10 @@ from rest_framework.decorators import api_view, permission_classes
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth import authenticate, login, logout
+from .serializers import UserSerializer, RegisterUserSerializer
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
@@ -24,7 +27,13 @@ class LoginView(APIView):
         if not password:
             return Response({"detail": "Password required."}, status=status.HTTP_400_BAD_REQUEST)
         
-        # Check the user credentials
+        # Check if the user exists with the given email
+        try:
+            User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({"detail": "Email not found."}, status=status.HTTP_401_UNAUTHORIZED)
+
+        # The user exists, try to authenticate the password
         user = authenticate(request, email=email, password=password)
 
         if user is not None:
@@ -34,13 +43,11 @@ class LoginView(APIView):
             # Send back the user info in the response body so the frontend can store it in state and display it
             return Response({
                 "detail": "Successfully logged in.",
-                "user": {
-                    "email": user.email,
-                }
+                "user": UserSerializer(user).data,
             }, status=status.HTTP_200_OK)
 
         # Fail gracefully
-        return Response({"detail": "Invalid credentials."}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({"detail": "Incorrect password."}, status=status.HTTP_401_UNAUTHORIZED)
 
 @api_view(['GET'])
 @ensure_csrf_cookie
@@ -50,10 +57,8 @@ def get_session_user(request):
     Quick auth check endpoint:
     The frontend can call this on app or page load to check if the user has a valid session, then return that user's info
     """
-    return Response({
-        "id": request.user.id,
-        "email": request.user.email
-    })
+    serializer = UserSerializer(request.user)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 @ensure_csrf_cookie
@@ -66,3 +71,18 @@ def logout_user(request):
     print(f"Logging out user: {request.user.email}")
     logout(request)
     return Response({"detail": "Successfully logged out."}, status=200)
+
+class RegisterView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = RegisterUserSerializer(data=request.data)
+
+        # is_valid() will catch if the email is already in use
+        if serializer.is_valid():
+            user = serializer.save() # calls create() in serializer
+            login(request, user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        # If invalid, it returns specific field errors
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
