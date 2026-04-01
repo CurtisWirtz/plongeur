@@ -7,7 +7,9 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth import authenticate, login, logout
 from .serializers import UserSerializer, RegisterUserSerializer
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
@@ -25,7 +27,13 @@ class LoginView(APIView):
         if not password:
             return Response({"detail": "Password required."}, status=status.HTTP_400_BAD_REQUEST)
         
-        # Check the user credentials
+        # Check if the user exists with the given email
+        try:
+            User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({"detail": "Email not found."}, status=status.HTTP_401_UNAUTHORIZED)
+
+        # The user exists, try to authenticate the password
         user = authenticate(request, email=email, password=password)
 
         if user is not None:
@@ -39,7 +47,7 @@ class LoginView(APIView):
             }, status=status.HTTP_200_OK)
 
         # Fail gracefully
-        return Response({"detail": "Invalid credentials."}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({"detail": "Incorrect password."}, status=status.HTTP_401_UNAUTHORIZED)
 
 @api_view(['GET'])
 @ensure_csrf_cookie
