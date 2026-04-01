@@ -14,9 +14,7 @@ const useLogout = () => {
       return response.data
     },
     onSuccess: () => {
-      // set auth to null immediately on logout, so UI can react right away
-      queryClient.setQueryData(['auth-user'], null) 
-      // removes all queries, but preserves client settings
+      // removes all queries, but isn't as nuclear as .clear() which also resets settings and cache config
       queryClient.removeQueries()  
       
       navigate({ to: '/login' })
