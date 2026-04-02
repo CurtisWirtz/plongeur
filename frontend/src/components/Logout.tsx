@@ -16,7 +16,7 @@ export function Logout() {
         disabled={isPending}
         className="text-red-500 hover:text-red-700 font-medium cursor-pointer"
       >
-        {isPending ? 'Logging out...' : 'Logout'}
+        Logout
       </button>
     </form>
   )
