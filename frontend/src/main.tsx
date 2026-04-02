@@ -17,12 +17,10 @@ const queryClient = new QueryClient({
     },
 });
 
-// Register the router instance for type safety
-interface RegisterRouter {
-  routeTree: typeof routeTree;
+interface RouterContext {
+  routeTree: typeof routeTree,
   context: {
-    // The queryClient here is accessed by guards and loaders
-    queryClient: QueryClient;
+    queryClient: QueryClient
   }
 }
 
@@ -32,7 +30,7 @@ const router = createRouter({
   context: {
     queryClient, // This is where guards and loaders will access the queryClient
   },
-} satisfies RegisterRouter)
+} satisfies RouterContext)
 
 // Render the app
 const rootElement = document.getElementById('root')!
