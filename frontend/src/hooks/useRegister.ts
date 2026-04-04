@@ -19,7 +19,7 @@ const useRegister = () => {
             queryClient.setQueryData(['auth-user'], data)
             // ensure the session is synced in the background
             queryClient.invalidateQueries({ queryKey: ['auth-user'] })
-            navigate({to: "/"})
+            navigate({to: "/dashboard"})
         },
         onError: (error: AxiosError<{ email: string }>) => {
             console.error("Registration failed:", error.response?.data);
