@@ -17,19 +17,20 @@ const queryClient = new QueryClient({
     },
 });
 
-// Create a new router instance
-const router = createRouter({ routeTree })
-
-// Register the router instance for type safety
-declare module '@tanstack/react-router' {
-  interface Register {
-    router: typeof router;
-    context: {
-      // The queryClient here is accessed by guards and loaders
-      queryClient: typeof queryClient;
-    }
+interface RouterContext {
+  routeTree: typeof routeTree,
+  context: {
+    queryClient: QueryClient
   }
 }
+
+// Create a new router instance
+const router = createRouter({ 
+  routeTree,
+  context: {
+    queryClient, // This is where guards and loaders will access the queryClient
+  },
+} satisfies RouterContext)
 
 // Render the app
 const rootElement = document.getElementById('root')!

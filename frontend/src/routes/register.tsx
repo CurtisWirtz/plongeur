@@ -1,14 +1,20 @@
-import { createFileRoute, redirect } from '@tanstack/react-router'
-import isAuthenticated from '@/api/auth'
+import { createFileRoute, redirect, isRedirect } from '@tanstack/react-router'
 import Register from '@/components/Register'
+import type { QueryClient } from '@tanstack/react-query'
 
 export const Route = createFileRoute('/register')({
-  beforeLoad: async () => {
-    const loggedIn = await isAuthenticated()
+  beforeLoad: async ({ context }) => {
+    try {
+      const user = await (context as { queryClient: QueryClient }).queryClient.getQueryData(['auth-user'])
 
-    if (loggedIn) {
-      console.log("User already authenticated, bouncing to home.")
-      throw redirect({ to: '/' })
+      if (user) { 
+        // inside a try/catch block, this throws and error, but we can catch the error type and redirect there!
+        throw redirect({ to: '/' }) 
+      }
+    } catch (err) {
+      // If the error is actually a redirect, re-throw the error!
+      if (isRedirect(err)) throw err
+      return // If there's an error (..amybe a 401), we just ignore it and allow the user to see the register page
     }
   },
   component: Register,
