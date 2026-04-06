@@ -15,8 +15,6 @@ const useLogout = () => {
     onSuccess: () => {
       // the Header will update based on the auth-user query, so we need to clear that data out on logout
       queryClient.setQueryData(['auth-user'], null)
-      // removes all queries, but isn't as nuclear as .clear() which also resets settings and cache config
-      queryClient.removeQueries( { queryKey: ['auth-user'] }) 
 
       navigate({ to: '/login' })
     },
