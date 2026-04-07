@@ -1,9 +1,10 @@
 import Logout from '@/components/Logout'
 import { Link } from '@tanstack/react-router'
 import { useAuth } from '@/hooks/useAuth'
+import type { User } from '@/types/user.types'
 
 const Header = () => {
-  const { data: user, isLoading } = useAuth()
+  const { data: user } = useAuth() as { data: User | null }
 
   return (
     <header style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', borderBottom: '1px solid #eee' }}>
@@ -11,12 +12,12 @@ const Header = () => {
         <Link to="/" className="font-bold">Plongeur</Link>
       </nav>
       <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-        {isLoading ? (
-          <span>Loading...</span>
-        ) : user ? (
+        {user ? (
           <>
             {/* Display the user data from your Django UserSerializer */}
-            <span>Hi, {user.email}</span> 
+            <Link to="/dashboard" className="font-bold">
+              <span>Hi, {user.email}</span>
+            </Link>
             <Logout />
           </>
         ) : (
