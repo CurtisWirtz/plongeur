@@ -17,8 +17,6 @@ const useRegister = () => {
             console.log("Registration successful:", data);
             // Update the auth-user query with the newly registered User object/data
             queryClient.setQueryData(['auth-user'], data)
-            // ensure the session is synced in the background
-            queryClient.invalidateQueries({ queryKey: ['auth-user'] })
             navigate({to: "/dashboard"})
         },
         onError: (error: AxiosError<{ email: string }>) => {

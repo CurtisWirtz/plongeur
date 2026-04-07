@@ -21,8 +21,6 @@ const useLogin = () => {
             console.log("Login successful:", data);
             // Update the auth-user query with the logged-in User object/data
             queryClient.setQueryData(['auth-user'], data.user) 
-            // other components looking at auth-user will know the data has changed
-            queryClient.invalidateQueries({ queryKey: ['auth-user'] })
             
             // If search.redirect exists, use that's where we'll send the user after logging in. Otherwise, redirect them to root
             const destination = search.redirect || '/dashboard'
