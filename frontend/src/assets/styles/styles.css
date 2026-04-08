@@ -39,7 +39,7 @@
   --sidebar-border: oklch(0 0 0);
   --sidebar-ring: oklch(0.5931 0.2726 328.3634);
   --font-sans: SUSE Mono, ui-sans-serif, sans-serif, system-ui;
-  --font-serif: SUSE Mono, ui-sans-serif, sans-serif, system-ui;
+  --font-serif: SUSE Mono, ui-serif, serif, system-ui;
   --font-mono: SUSE Mono, monospace;
   --radius: 0.175rem;
   --shadow-x: 4px;
@@ -77,7 +77,7 @@
   --accent-foreground: oklch(0 0 0);
   --destructive: oklch(1.0000 0 0);
   --destructive-foreground: oklch(0 0 0);
-  --border: oklch(1.0000 0 0);
+  --border: oklch(0.4451 0.1170 339.0395);
   --input: oklch(1.0000 0 0);
   --ring: oklch(0.7506 0.2087 339.0239);
   --chart-1: oklch(0.7044 0.1872 23.1858);
@@ -94,7 +94,7 @@
   --sidebar-border: oklch(1.0000 0 0);
   --sidebar-ring: oklch(0.6131 0.2458 328.0714);
   --font-sans: SUSE Mono, ui-sans-serif, sans-serif, system-ui;
-  --font-serif: SUSE Mono, ui-sans-serif, sans-serif, system-ui;
+  --font-serif: SUSE Mono, ui-serif, serif, system-ui;
   --font-mono: SUSE Mono, monospace;
   --radius: 0.175rem;
   --shadow-x: 4px;
@@ -178,6 +178,10 @@
     @apply border-border outline-ring/50;
   }
   body {
+    font-family: 'SUSE Mono Variable', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
     @apply bg-background text-foreground;
     letter-spacing: var(--tracking-normal);
   }
