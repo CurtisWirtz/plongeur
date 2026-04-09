@@ -177,8 +177,14 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    background-color: var(--background);
+  }
   body {
     font-family: 'SUSE Mono Variable', sans-serif;
+    background-color: var(--background);
+    color: var(--foreground);
+
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 
