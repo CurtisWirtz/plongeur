@@ -1,4 +1,5 @@
 import useLogout from '@/hooks/useLogout'
+import { Button } from './ui/button'
 
 
 export function Logout() {
@@ -11,13 +12,14 @@ export function Logout() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <button 
+      <Button 
         type="submit" 
+        variant="ghost"
         disabled={isPending}
-        className="text-red-500 hover:text-red-700 font-medium cursor-pointer"
+        className="w-full text-center"
       >
         Logout
-      </button>
+      </Button>
     </form>
   )
 }
