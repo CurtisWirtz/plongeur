@@ -21,7 +21,7 @@ const Header = () => {
 
   return (
     <header className="w-full sticky top-0 bg-primary-foreground">
-      <nav className="flex justify-between w-full border-b px-4 border-accent pt-2 pb-3">
+      <nav className="flex justify-between w-full border-b px-3 md:px-7 border-accent pt-2 pb-3">
         <Link to="/" className="font-bold flex items-center">
           <h1>Plongeur</h1>
         </Link>
