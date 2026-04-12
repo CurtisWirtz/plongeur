@@ -54,13 +54,13 @@ const Header = () => {
         ) : (
           <div>
             <Button asChild variant="ghost">
-              <Link to="/login" activeProps={{ className: "bg-secondary shadow-sm" }}>
-                Login
+              <Link to="/register" activeProps={{ className: "bg-secondary shadow-sm" }}>
+                Register
               </Link>
             </Button>
             <Button asChild variant="ghost">
-              <Link to="/register" activeProps={{ className: "bg-secondary shadow-sm" }}>
-                Register
+              <Link to="/login" activeProps={{ className: "bg-secondary shadow-sm" }}>
+                Login
               </Link>
             </Button>
           </div>
