@@ -54,12 +54,12 @@ const Header = () => {
         ) : (
           <div>
             <Button asChild variant="ghost">
-              <Link to="/register" activeProps={{ className: "bg-secondary shadow-sm" }}>
+                <Link to="/register" activeProps={{ className: "bg-secondary dark:text-popover hover:dark:text-primary shadow-sm" }}>
                 Register
               </Link>
             </Button>
             <Button asChild variant="ghost">
-              <Link to="/login" activeProps={{ className: "bg-secondary shadow-sm" }}>
+                <Link to="/login" activeProps={{ className: "bg-secondary dark:text-popover hover:dark:text-primary shadow-sm" }}>
                 Login
               </Link>
             </Button>
