@@ -1,22 +1,43 @@
 import { registerSchema } from '@/schemas/auth'
 import type { RegisterSchemaType } from '@/schemas/auth'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import useRegister from '@/hooks/useRegister'
+import { Button } from '@/components/ui/button'
+import { Link } from '@tanstack/react-router'
+
+import { 
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardAction,
+  CardContent,
+  CardFooter,
+} from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { 
+  Field,
+  FieldLabel,
+  FieldError,
+  FieldGroup
+} from '@/components/ui/field'
+import { Spinner } from "@/components/ui/spinner"
 
 const Register = () => {
-    const {mutate, isPending, error} = useRegister()
-
-    const { register, handleSubmit, formState: { errors }, } = useForm<RegisterSchemaType>({
+    const form = useForm<RegisterSchemaType>({
         resolver: zodResolver(registerSchema),
         shouldFocusError: true, // a11y, focus errors when they occur
     })
+
+    const {mutate, isPending, error} = useRegister()
 
     const onSubmit = (data: RegisterSchemaType) => {
         // Fire the mutation from the useRegister hook
         mutate(data)
     }
 
+    // Simply capitalizes the first letter on error reports
     function capitalized(str: string): string {
         // get the first character and capitalize it
         const firstChar: string = str[0][0].toUpperCase()
@@ -25,58 +46,98 @@ const Register = () => {
     }
 
     return (
-        <div style={{ border: '1px solid #ccc', padding: '1rem', maxWidth: '300px' }}>
-            <h3>Sign up!</h3>
-            <form onSubmit={handleSubmit(onSubmit)}>
-
-                {error?.response?.data?.email && (
-                    <p style={{ color: 'red', fontSize: '0.8rem' }}>{capitalized(error.response.data?.email)}</p>
-                )}
-
-                <div>
-                    <input 
-                        {...register('email')} 
-                        type="email" 
-                        placeholder="Email" 
-                    />
-                    {errors.email && (
-                        <p style={{ color: 'orange', fontSize: '0.8rem' }}>{errors.email.message}</p>
-                    )}
-                </div>
-
-                <br />
-                
-                <div>
-                    <input 
-                        {...register('password')} 
-                        type="password" 
-                        placeholder="Password" 
-                    />
-                    {errors.password && (
-                        <p style={{ color: 'orange', fontSize: '0.8rem' }}>{errors.password.message}</p>
-                    )}
-                </div>
-
-                <br />
-
-                <div>
-                    <input 
-                        {...register('confirmPassword')} 
-                        type="password" 
-                        placeholder="Confirm Password" 
-                    />
-                    {errors.confirmPassword && (
-                        <p style={{ color: 'orange', fontSize: '0.8rem' }}>{errors.confirmPassword.message}</p>
-                    )}
-                </div>
-
-                <br />
-
-                <button type="submit" disabled={isPending}>
-                    {isPending ? 'Signing up...' : 'Sign up'}
-                </button>
-            </form>
-        </div>
+        <section className="container mt-7 md:mt-14">
+            <Card className="max-w-100 mx-auto">
+                <CardHeader>
+                    <CardTitle>Create an account:</CardTitle>
+                    <CardDescription>
+                        Choose your credentials 
+                    </CardDescription>
+                    <CardAction className="flex flex-col text-center">
+                        <span className='mb-1 text-sm'>Have an account?</span>
+                        <Button variant="outline" className="cursor-pointer shadow-2xl" asChild>
+                            <Link to="/login">Login</Link>
+                        </Button>
+                    </CardAction>
+                </CardHeader>
+                <CardContent>
+                    <form id="register" onSubmit={form.handleSubmit(onSubmit)}>
+                        <FieldGroup>
+                            <Controller 
+                                name="email"
+                                control={form.control}
+                                render={({ field, fieldState }) => (
+                                <Field data-invalid={fieldState.invalid}>
+                                    <FieldLabel htmlFor="email">E-Mail</FieldLabel>
+                                    <Input 
+                                        {...field} 
+                                        id="email"
+                                        aria-invalid={fieldState.invalid}
+                                        type="email" 
+                                        placeholder="Email"
+                                        required
+                                    />
+                                    {fieldState.invalid && (
+                                        <FieldError className="text-red-500" errors={[fieldState.error]} />
+                                    )}
+                                </Field>
+                                )}
+                            />
+                            <Controller 
+                                name="password"
+                                control={form.control}
+                                render={({ field, fieldState }) => (
+                                <Field data-invalid={fieldState.invalid}>
+                                    <FieldLabel htmlFor="password">Password</FieldLabel>
+                                    <Input 
+                                        {...field} 
+                                        id="password"
+                                        aria-invalid={fieldState.invalid}
+                                        type="password" 
+                                        placeholder="Password" 
+                                        required
+                                    />
+                                    {fieldState.invalid && (
+                                        <FieldError className="text-red-500" errors={[fieldState.error]} />
+                                    )}
+                                </Field>
+                                )}
+                            />
+                            <Controller 
+                                name="confirmPassword"
+                                control={form.control}
+                                render={({ field, fieldState }) => (
+                                <Field data-invalid={fieldState.invalid}>
+                                    <FieldLabel htmlFor="confirmPassword">Confirm Password</FieldLabel>
+                                    <Input 
+                                        {...field} 
+                                        id="confirmPassword"
+                                        aria-invalid={fieldState.invalid}
+                                        type="password" 
+                                        placeholder="Confirm Password" 
+                                        required
+                                    />
+                                    {fieldState.invalid && (
+                                        <FieldError className="text-red-500" errors={[fieldState.error]} />
+                                    )}
+                                </Field>
+                                )}
+                            />
+                        </FieldGroup>
+                    </form>
+                </CardContent>
+                <CardFooter>
+                    <Field>
+                        <Button form="register" type="submit" className="shadow-2xl" disabled={isPending}>
+                            {isPending ? <Spinner /> : 'Register'}
+                        </Button>
+                        {error?.response?.data?.email && (
+                            <FieldError className="text-red-500 text-center mt-2">{capitalized(error.response.data?.email)}</FieldError>
+                        )}
+                    </Field>
+                </CardFooter>
+            </Card>
+        </section>
     )
 }
 

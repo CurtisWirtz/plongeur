@@ -30,15 +30,17 @@ export const Route = createRootRoute<MyRouterContext>({
     }
   },
   component: () => (
-    <>
+    <div className="min-h-[800px] h-screen flex flex-col">
       <Header />
-      <Outlet />
+      <main className="flex flex-col grow">
+        <Outlet />
+      </main>
       <Footer />
 
       <Suspense>
         <TanStackRouterDevtools />
         <ReactQueryDevtools initialIsOpen={false} />
       </Suspense>
-    </>
+    </div>
   ),
 })

@@ -47,23 +47,26 @@ Password: ${DATABASE_PASSWORD}
 `docker compose exec frontend printenv | grep VITE` tests to see if env variables successfully loaded into the frontend container with the word 'VITE' attached
 
 # TODOS:
-- apply Mantine or MUI or ShadCN or BaseUI?
--create authenticated routes (maybe auth provider so we can get that state via context in the header to show current user/conditionally show buttons for login/logout)
-   - redirect to protected test route on login and register pages instead of bouncing to home
+- add honeypot, captcha? some more security for login/register
 
--add honeypot, captcha? some more security for login/register
 
-   once successful...
- -final flow:
-    -first, register email (it holds for 24 hours)
-       - OTP model
-       - also checks if the email is already registered
-    - email verification is sent 
-       - if email link is clicked, they're prompted to create the user... set password, phone number, name..etc
+- once successful...
+- final flow:
+- create OTP model
+- create signup email form route api endpoint
+- user register email (it holds for 24 hours)
+- checks if the email is already registered to OTP or account
+- celery delegates email task to redis
+- redis sends email verification link
+- if email link is clicked/OTP entered, they're prompted to create the user... set password, phone number, first & last name..etc
+
+- testing frontend flow logic
 
 - 404 page: (notFoundComponent on frontend)
 
 - docker prune cronjob on production server: every night at 3:00 AM ...using bash? `0 3 * * * /usr/bin/docker system prune -af --volumes`
-    (addresses the remnant <none> containers that could accumulate and burn up bandwidth)
+    (addresses the remnant <none> containers that could accumulate and burn up resources)
 
     in the meantime, running `docker image prune` will cleanse the dangling containers - they tend to be 0B large anyways...
+make PWA
+make live, production /w AWS?

@@ -1,13 +1,14 @@
-import { useAuth } from '@/hooks/useAuth'
+import { useQueryClient } from '@tanstack/react-query'
 
 export default function TestComponent() {
-  const user = useAuth()
-  console.log("user", user)
   
+  const queryClient = useQueryClient()
+  const user: { email: string } | null | undefined = queryClient.getQueryData(['auth-user'])
+
   return (
     <div className="flex flex-col">
       <h1>Hello "/_authenticated/test/"!</h1>
-      {user && <p>Welcome, {user.data?.email}!</p>}
+      {user && <p>Welcome, {user.email}!</p>}
     </div>
   )
 }
