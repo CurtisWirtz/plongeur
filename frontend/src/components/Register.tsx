@@ -37,6 +37,7 @@ const Register = () => {
         mutate(data)
     }
 
+    // Simply capitalizes the first letter on error reports
     function capitalized(str: string): string {
         // get the first character and capitalize it
         const firstChar: string = str[0][0].toUpperCase()
@@ -77,7 +78,7 @@ const Register = () => {
                                         required
                                     />
                                     {fieldState.invalid && (
-                                        <FieldError errors={[fieldState.error]} />
+                                        <FieldError className="text-red-500" errors={[fieldState.error]} />
                                     )}
                                 </Field>
                                 )}
@@ -97,7 +98,7 @@ const Register = () => {
                                         required
                                     />
                                     {fieldState.invalid && (
-                                        <FieldError errors={[fieldState.error]} />
+                                        <FieldError className="text-red-500" errors={[fieldState.error]} />
                                     )}
                                 </Field>
                                 )}
@@ -117,7 +118,7 @@ const Register = () => {
                                         required
                                     />
                                     {fieldState.invalid && (
-                                        <FieldError errors={[fieldState.error]} />
+                                        <FieldError className="text-red-500" errors={[fieldState.error]} />
                                     )}
                                 </Field>
                                 )}
@@ -128,7 +129,7 @@ const Register = () => {
                 <CardFooter>
                     <Field>
                         <Button form="register" type="submit" className="shadow-2xl" disabled={isPending}>
-                            {isPending ? <Spinner /> : 'Login'}
+                            {isPending ? <Spinner /> : 'Register'}
                         </Button>
                         {error?.response?.data?.email && (
                             <FieldError className="text-red-500 text-center mt-2">{capitalized(error.response.data?.email)}</FieldError>

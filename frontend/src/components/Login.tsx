@@ -102,7 +102,7 @@ const Login = () => {
                       required
                     />
                     {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
+                      <FieldError className="text-red-500" errors={[fieldState.error]} />
                     )}
                   </Field>
                 )}
@@ -122,7 +122,7 @@ const Login = () => {
                       required
                     />
                     {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
+                      <FieldError className="text-red-500" errors={[fieldState.error]} />
                     )}
                   </Field>
                 )}
