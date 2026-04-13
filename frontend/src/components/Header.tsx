@@ -27,30 +27,27 @@ const Header = () => {
         </Link>
       
         {user ? (
-          <div>
-            <DropdownMenu>
-              <DropdownMenuTrigger className="cursor-pointer">
-              <Avatar className="shadow-2xl border" >
-                {/* <AvatarImage /> */}
-                <AvatarFallback>
-                  <UserRound />
-                </AvatarFallback>
-              </Avatar>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="space-y-2 w-full text-center -translate-x-7">
-                <DropdownMenuLabel >{user.email}</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild >
-                  <Button asChild variant="ghost" className="w-full cursor-pointer">
-                    <Link to="/dashboard">Dashboard</Link>
-                  </Button>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Logout />
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger className="cursor-pointer">
+            <Avatar className="shadow-2xl border">
+              <AvatarFallback>
+                <UserRound />
+              </AvatarFallback>
+            </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="space-y-2 w-full text-center -translate-x-7">
+              <DropdownMenuLabel >{user.email}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild >
+                <Button asChild variant="ghost" className="w-full cursor-pointer">
+                  <Link to="/dashboard">Dashboard</Link>
+                </Button>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Logout />
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         ) : (
           <div>
             <Button asChild variant="ghost">
