@@ -46,8 +46,8 @@ const Register = () => {
     }
 
     return (
-        <section className="container mt-7 md:mt-14">
-            <Card className="max-w-100 mx-auto">
+        <section className="container relative w-full h-full">
+            <Card className="max-w-100 w-full absolute top-1/2 left-1/2 -translate-1/2">
                 <CardHeader>
                     <CardTitle>Create an account:</CardTitle>
                     <CardDescription>
