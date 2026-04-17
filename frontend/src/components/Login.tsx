@@ -60,6 +60,10 @@ const Login = () => {
   const form = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
     shouldFocusError: true, // a11y, focus errors when they occur
+    defaultValues: {
+      email: "",
+      password: ""
+    }
   })
 
   const { mutate, isPending, error } = useLogin()

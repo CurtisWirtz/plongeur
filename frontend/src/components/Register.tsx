@@ -28,6 +28,13 @@ const Register = () => {
     const form = useForm<RegisterSchemaType>({
         resolver: zodResolver(registerSchema),
         shouldFocusError: true, // a11y, focus errors when they occur
+        defaultValues: {
+            email: "",
+            confirm_email: "", // honeypot
+            website: "", // honeypot
+            password: "",
+            confirm_password: "",
+        }
     })
 
     const {mutate, isPending, error} = useRegister()
