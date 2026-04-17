@@ -1,9 +1,8 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
-import type { QueryClient } from '@tanstack/react-query'
 
 export const Route = createFileRoute('/_authenticated')({
   beforeLoad: ({ context, location }) => {
-    const user = (context as { queryClient: QueryClient }).queryClient.getQueryData(['auth-user'])
+    const user = context.queryClient.getQueryData(['auth-user'])
     
     if (!user) {
       // not authenticated, redirect to login page

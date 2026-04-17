@@ -1,6 +1,5 @@
 import { createFileRoute, isRedirect, redirect } from '@tanstack/react-router'
 import Login from '@/components/Login'
-import type { QueryClient } from '@tanstack/react-query'
 
 type LoginSearch = {
   redirect?: string
@@ -15,7 +14,7 @@ export const Route = createFileRoute('/login')({
   },
   beforeLoad: ({ context, search }) => {
     try {
-      const user = (context as { queryClient: QueryClient }).queryClient.getQueryData(['auth-user'])
+      const user = context.queryClient.getQueryData(['auth-user'])
 
       if (user) { 
         // inside a try/catch block, this throws an error..sending us to 'catch (err)', but we can catch the error type and redirect there!

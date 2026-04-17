@@ -5,7 +5,7 @@ import type { QueryClient } from '@tanstack/react-query'
 export const Route = createFileRoute('/register')({
   beforeLoad: async ({ context }) => {
     try {
-      const user = await (context as { queryClient: QueryClient }).queryClient.getQueryData(['auth-user'])
+      const user = await context.queryClient.getQueryData(['auth-user'])
 
       if (user) { 
         // inside a try/catch block, this throws and error, but we can catch the error type and redirect there!
