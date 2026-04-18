@@ -8,6 +8,9 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth import authenticate, login, logout
 from .serializers import UserSerializer, RegisterUserSerializer
 from django.contrib.auth import get_user_model
+import random
+import string
+
 
 User = get_user_model()
 
@@ -76,7 +79,10 @@ class RegisterView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        serializer = RegisterUserSerializer(data=request.data)
+        serializer = RegisterUserSerializer(
+            data=request.data,
+            context={'request': request} # critical for the honeypot_key
+        )
 
         # is_valid() will catch if the email is already in use
         if serializer.is_valid():
@@ -86,3 +92,18 @@ class RegisterView(APIView):
         
         # If invalid, it returns specific field errors
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@ensure_csrf_cookie
+@permission_classes([AllowAny])
+def get_honeypot(request):
+    # Generate a random string
+    rando_string = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+    # give it an email format
+    honeypot_key = rando_string + '@gmail.com'
+
+    print(honeypot_key)
+    
+    # Store it in the session (requires SessionMiddleware)
+    request.session['honeypot_key'] = honeypot_key
+    return Response({'honeypot_key': honeypot_key})

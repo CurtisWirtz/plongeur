@@ -5,6 +5,8 @@ import { Controller, useForm } from 'react-hook-form'
 import useRegister from '@/hooks/useRegister'
 import { Button } from '@/components/ui/button'
 import { Link } from '@tanstack/react-router'
+import { useSuspenseQuery } from '@tanstack/react-query'
+import { fetchHoneypot } from '@/api/auth'
 
 import { 
   Card,
@@ -24,15 +26,35 @@ import {
 } from '@/components/ui/field'
 import { Spinner } from "@/components/ui/spinner"
 
-const Register = () => {
+const Register = () => { 
+    const { data: honeypot } = useSuspenseQuery({
+        queryKey: ['honeypot'],
+        queryFn: fetchHoneypot,
+        select: (data) => data?.honeypot_key,
+        staleTime: 1000 * 60 * 30, // Keep this key for 30 mins 
+    });
+   
     const form = useForm<RegisterSchemaType>({
         resolver: zodResolver(registerSchema),
         shouldFocusError: true, // a11y, focus errors when they occur
+        defaultValues: {
+            email: "",
+            confirm_email: honeypot,
+            website: "", // also a honeypot
+            password: "",
+            confirm_password: "",
+        }
     })
 
     const {mutate, isPending, error} = useRegister()
 
     const onSubmit = (data: RegisterSchemaType) => {
+        // Validate simple honeypot manually before sending to server
+        if (data.website !== "") {
+            console.warn("Website field populated, Honeypot triggered.");
+            return; // Silent rejection
+        }
+
         // Fire the mutation from the useRegister hook
         mutate(data)
     }
@@ -46,8 +68,8 @@ const Register = () => {
     }
 
     return (
-        <section className="container mt-7 md:mt-14">
-            <Card className="max-w-100 mx-auto">
+        <section className="container relative w-full h-full">
+            <Card className="max-w-100 w-full absolute top-1/2 left-1/2 -translate-1/2">
                 <CardHeader>
                     <CardTitle>Create an account:</CardTitle>
                     <CardDescription>
@@ -67,20 +89,34 @@ const Register = () => {
                                 name="email"
                                 control={form.control}
                                 render={({ field, fieldState }) => (
-                                <Field data-invalid={fieldState.invalid}>
-                                    <FieldLabel htmlFor="email">E-Mail</FieldLabel>
-                                    <Input 
-                                        {...field} 
-                                        id="email"
-                                        aria-invalid={fieldState.invalid}
-                                        type="email" 
-                                        placeholder="Email"
-                                        required
-                                    />
-                                    {fieldState.invalid && (
-                                        <FieldError className="text-red-500" errors={[fieldState.error]} />
-                                    )}
-                                </Field>
+                                    <Field data-invalid={fieldState.invalid}>
+                                        <FieldLabel htmlFor="email">E-Mail</FieldLabel>
+                                        <Input 
+                                            {...field} 
+                                            id="email"
+                                            aria-invalid={fieldState.invalid}
+                                            type="email" 
+                                            placeholder="Email"
+                                            required
+                                        />
+                                        {fieldState.invalid && (
+                                            <FieldError className="text-red-500" errors={[fieldState.error]} />
+                                        )}
+                                    </Field>
+                                )}
+                            />
+                            <Controller 
+                                name="confirm_email"
+                                control={form.control}
+                                render={({ field }) => (
+                                    <input {...field} id="confirm_email" name="confirm_email" type="email" autoComplete="off" required tabIndex={-1} />
+                                )}
+                            />
+                            <Controller 
+                                name="website"
+                                control={form.control}
+                                render={({ field }) => (
+                                    <input {...field} id="website_input" type="text" autoComplete="off" tabIndex={-1} />
                                 )}
                             />
                             <Controller 
@@ -104,23 +140,23 @@ const Register = () => {
                                 )}
                             />
                             <Controller 
-                                name="confirmPassword"
+                                name="confirm_password"
                                 control={form.control}
                                 render={({ field, fieldState }) => (
-                                <Field data-invalid={fieldState.invalid}>
-                                    <FieldLabel htmlFor="confirmPassword">Confirm Password</FieldLabel>
-                                    <Input 
-                                        {...field} 
-                                        id="confirmPassword"
-                                        aria-invalid={fieldState.invalid}
-                                        type="password" 
-                                        placeholder="Confirm Password" 
-                                        required
-                                    />
-                                    {fieldState.invalid && (
-                                        <FieldError className="text-red-500" errors={[fieldState.error]} />
-                                    )}
-                                </Field>
+                                    <Field data-invalid={fieldState.invalid}>
+                                        <FieldLabel htmlFor="confirm_password">Confirm Password</FieldLabel>
+                                        <Input 
+                                            {...field} 
+                                            id="confirm_password"
+                                            aria-invalid={fieldState.invalid}
+                                            type="password" 
+                                            placeholder="Confirm Password" 
+                                            required
+                                        />
+                                        {fieldState.invalid && (
+                                            <FieldError className="text-red-500" errors={[fieldState.error]} />
+                                        )}
+                                    </Field>
                                 )}
                             />
                         </FieldGroup>

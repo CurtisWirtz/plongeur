@@ -1,11 +1,12 @@
 import { createFileRoute, redirect, isRedirect } from '@tanstack/react-router'
 import Register from '@/components/Register'
-import type { QueryClient } from '@tanstack/react-query'
+import { Spinner } from '@/components/ui/spinner'
+import { fetchHoneypot } from '@/api/auth'
 
 export const Route = createFileRoute('/register')({
   beforeLoad: async ({ context }) => {
     try {
-      const user = await (context as { queryClient: QueryClient }).queryClient.getQueryData(['auth-user'])
+      const user = await context.queryClient.getQueryData(['auth-user'])
 
       if (user) { 
         // inside a try/catch block, this throws and error, but we can catch the error type and redirect there!
@@ -18,4 +19,13 @@ export const Route = createFileRoute('/register')({
     }
   },
   component: Register,
+  loader: async ({ context }) => {
+    await context.queryClient.ensureQueryData({
+      queryKey: ['honeypot'],
+      queryFn: fetchHoneypot,
+      staleTime: 1000 * 60 * 30, // Keep this key for 30 mins
+    });
+  },
+  pendingComponent: () => <div className="flex justify-center w-full my-16 text-4xl"><Spinner className="size-6" /></div>,
+  errorComponent: () => <div className="flex justify-center w-full my-16 text-4xl">Error connecting to the server.</div>,
 })
