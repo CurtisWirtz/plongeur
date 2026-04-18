@@ -13,16 +13,48 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'email', 'first_name', 'last_name', 'phone_number']
         read_only_fields = fields
 
-# Used for Input: receives data from React (creating new users or updating user fields)
+# Used for Input: receives new user data from React (creating new users or updating user fields)
 class RegisterUserSerializer(serializers.ModelSerializer):
     # Password is write_only so it's never sent back in a request
     password = serializers.CharField(write_only=True)
 
+    # Define the honeypots here so it doesn't look at the user model for these non-existent fields
+    website = serializers.CharField(required=False, allow_blank=True, write_only=True)
+    confirm_email = serializers.CharField(write_only=True)
+
     class Meta:
         model = User
-        fields = ['email', 'password', 'first_name', 'last_name', 'phone_number']
+        fields = ['email', 'password', 'website', 'confirm_email']
+
+    def validate(self, data):
+        request = self.context.get('request')
+        session_key = request.session.get('honeypot_key')
+        print('session_key', session_key)
+
+        print("data", data)
+
+        print("data.get('website')", data.get('website'))
+        print("data.get('confirm_email')", data.get('confirm_email'))
+
+        # Check simple honeypot
+        if data.get('website'):
+            print("data.get('website')", data.get('website'))
+            raise serializers.ValidationError("Bot detected - Website Field.")
+
+        # Verify the JS-injected honeypot_key matches the session
+        if data.get('confirm_email') != session_key:
+            print("data.get('confirm_email')", data.get('confirm_email'))
+            print('session_key', session_key)
+            raise serializers.ValidationError("Bot detected - Confirm Email Field.")
+
+        # Clear the key, do not reuse
+        del request.session['honeypot_key']
+        return data
 
     # This method is called by ModelSerializer.save() after validation
     def create(self, validated_data):
+        validated_data.pop('website', None)
+        validated_data.pop('confirm_email', None)
+
         # Create the user using Django's recommended create_user method, create_user handles the password hashing automatically
         return User.objects.create_user(**validated_data)
