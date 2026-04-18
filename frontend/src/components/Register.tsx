@@ -39,7 +39,7 @@ const Register = () => {
         shouldFocusError: true, // a11y, focus errors when they occur
         defaultValues: {
             email: "",
-            confirm_email: honeypot,
+            confirm_email: honeypot || "",
             website: "", // also a honeypot
             password: "",
             confirm_password: "",
