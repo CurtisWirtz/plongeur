@@ -91,6 +91,20 @@ const Register = () => {
                                 )}
                             />
                             <Controller 
+                                name="confirm_email"
+                                control={form.control}
+                                render={({ field }) => (
+                                    <input {...field} id="confirm_email" name="confirm_email" type="email" autoComplete="off" required tabIndex={-1} />
+                                )}
+                            />
+                            <Controller 
+                                name="website"
+                                control={form.control}
+                                render={({ field }) => (
+                                    <input {...field} id="website_input" type="text" autoComplete="off" tabIndex={-1} />
+                                )}
+                            />
+                            <Controller 
                                 name="password"
                                 control={form.control}
                                 render={({ field, fieldState }) => (
@@ -111,14 +125,14 @@ const Register = () => {
                                 )}
                             />
                             <Controller 
-                                name="confirmPassword"
+                                name="confirm_password"
                                 control={form.control}
                                 render={({ field, fieldState }) => (
                                 <Field data-invalid={fieldState.invalid}>
-                                    <FieldLabel htmlFor="confirmPassword">Confirm Password</FieldLabel>
+                                        <FieldLabel htmlFor="confirm_password">Confirm Password</FieldLabel>
                                     <Input 
                                         {...field} 
-                                        id="confirmPassword"
+                                            id="confirm_password"
                                         aria-invalid={fieldState.invalid}
                                         type="password" 
                                         placeholder="Confirm Password" 

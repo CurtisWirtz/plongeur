@@ -193,6 +193,14 @@
   }
 }
 
+/* Honeypots */
+#website_input, #confirm_email {
+  position: absolute;
+  z-index: -1;
+  opacity: 0;
+  inset: 0;
+}
+
 .container {
   @apply mx-auto w-full px-4 md:px-7 max-w-500;
 }
