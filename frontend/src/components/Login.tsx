@@ -62,6 +62,7 @@ const Login = () => {
     shouldFocusError: true, // a11y, focus errors when they occur
     defaultValues: {
       email: "",
+      website: "",
       password: ""
     }
   })
@@ -69,6 +70,12 @@ const Login = () => {
   const { mutate, isPending, error } = useLogin()
 
   const onSubmit = (data: LoginSchemaType) => {
+    // simple 'website' honeypot catch
+    if (data.website !== "") {
+        console.warn("Website field populated, Honeypot triggered.");
+        return; // Silent rejection
+    }
+
     // Fire the mutation from the useLogin hook
     mutate(data)
   }
@@ -109,6 +116,13 @@ const Login = () => {
                       <FieldError className="text-red-500" errors={[fieldState.error]} />
                     )}
                   </Field>
+                )}
+              />
+              <Controller 
+                name="website"
+                control={form.control}
+                render={({ field }) => (
+                    <input {...field} id="website_input" type="text" autoComplete="off" tabIndex={-1} />
                 )}
               />
               <Controller 

@@ -2,6 +2,8 @@ import { z } from 'zod';
 
 export const loginSchema = z.object({
   email: z.email().min(5, "Email must be at least 5 characters").max(150, "Email must be less than 150 characters"),
+  // simple honeypot, needs to be blank on submission
+  website: z.string().max(0).optional(),
   password: z.string().min(3, "Password must be at least 3 characters"),
 });
 
