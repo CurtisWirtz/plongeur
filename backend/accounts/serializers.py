@@ -29,22 +29,13 @@ class RegisterUserSerializer(serializers.ModelSerializer):
     def validate(self, data):
         request = self.context.get('request')
         session_key = request.session.get('honeypot_key')
-        print('session_key', session_key)
-
-        print("data", data)
-
-        print("data.get('website')", data.get('website'))
-        print("data.get('confirm_email')", data.get('confirm_email'))
 
         # Check simple honeypot
         if data.get('website'):
-            print("data.get('website')", data.get('website'))
             raise serializers.ValidationError("Bot detected - Website Field.")
 
         # Verify the JS-injected honeypot_key matches the session
         if data.get('confirm_email') != session_key:
-            print("data.get('confirm_email')", data.get('confirm_email'))
-            print('session_key', session_key)
             raise serializers.ValidationError("Bot detected - Confirm Email Field.")
 
         # Clear the key, do not reuse
