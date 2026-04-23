@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User#, PendingEmailVerification
+from .models import User, UnverifiedUser
 
 class CustomUserAdmin(UserAdmin):
     # So the 'Add User' page doesn't ask for a username
@@ -24,6 +24,9 @@ class CustomUserAdmin(UserAdmin):
     search_fields = ('email',)
     ordering = ('email',)
 
+class UnverifiedUserAdmin(admin.ModelAdmin):
+    list_display = ("email", "OTP", "created_at", "is_expired")
+
 # Register your models
 admin.site.register(User, CustomUserAdmin)
-# admin.site.register(PendingEmailVerification)
+admin.site.register(UnverifiedUser, UnverifiedUserAdmin)
