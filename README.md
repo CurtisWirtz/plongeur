@@ -1,5 +1,7 @@
 # Plongeur
 
+# Under Development
+
 ### Basic instructions for local development:
 Clone this repository: `git clone git@github.com:CurtisWirtz/plongeur`
 
@@ -34,20 +36,45 @@ Then run the `docker compose up --build` command again.
 PGAdmin4 will now be avilable in your browser at:
 http://localhost:8080
 
-Log in to PGAdmin4 using the values of PGADMIN_DEFAULT_EMAIL and PGADMIN_DEFAULT_PASSWORD.
-Register a new server connection:
-name: plongeur (or whatever)
-Go to Connection tab:
-Host: db (This is the service name of the PostgreSQL container)
-Port: 5432
-Username: ${DATABASE_USERNAME} (from the .env file)
-Password: ${DATABASE_PASSWORD}
+- Log in to PGAdmin4 using the values of PGADMIN_DEFAULT_EMAIL and PGADMIN_DEFAULT_PASSWORD set in docker-compose.yml (from .env)
+- Register a new server connection:
+  - name: plongeur (or whatever)
+- Go to Connection tab:
+  - Host: db (This is the service name of the PostgreSQL container)
+  - Port: 5432
+  - Username: ${DATABASE_USERNAME} (from the .env file)
+  - Password: ${DATABASE_PASSWORD}
 
 # Useful commands:
 `docker compose exec frontend printenv | grep VITE` tests to see if env variables successfully loaded into the frontend container with the word 'VITE' attached
 
 # TODOS:
-- add honeypot, captcha? some more security for login/register
+1. x - model unverified user
+2. view for endpoint
+3. serializer for model
+2. post request email input
+3. create the new object and return data
+4. display the OTP - test if new code is created for each object
+5. test expiration date of OTP
+
+
+Full signup map:
+1. 
+- frontend /register, submit email (mutation) to /api/register/request-otp (with csrf token)
+- backend /api/register/request-otp checks csrf token, checks if email is taken by unverified or existing user
+  - backend ON FAIL: if email is taken by either unverifieduser (not is_expired) or user, send response saying the email is already taken
+  - backend ON SUCCESSFUL CREATION:
+    - if unverifieduser email matches but is_expired=true, delete row from DB table 
+    - creates a new row in DB table, reserving the email with 24HR exiration date OTP
+    - dispatch celery/redis to send email (with mailgun)
+    - response 200 OK, and send a stored session variable `request.session['pending_email'] = email`
+2. 
+- if/when frontend gets OK 200, then routes to /register/verify with the `session['pending_email']`. This is the success/"check your email" screen with an OTP input
+  - /register/verify-otp has a loader/guard that checks for `session['pending_email']` to determine which email is being registered. 
+  - page has a 'resend verification code' link/button
+    - should say "please allow a few minutes for the email to appear in your inbox"
+  
+  - DONT FORGET TO CLEANUP SESSION with del `request.session['pending_email']` at the end of the 
 
 
 - once successful...
@@ -59,6 +86,8 @@ Password: ${DATABASE_PASSWORD}
 - celery delegates email task to redis
 - redis sends email verification link
 - if email link is clicked/OTP entered, they're prompted to create the user... set password, phone number, first & last name..etc
+
+- rate limit requests for register/login/OTP reset/finalize
 
 - testing frontend flow logic
 
