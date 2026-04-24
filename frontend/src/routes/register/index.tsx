@@ -3,7 +3,7 @@ import Register from '@/components/Register'
 import { Spinner } from '@/components/ui/spinner'
 import { fetchHoneypot } from '@/api/auth'
 
-export const Route = createFileRoute('/register')({
+export const Route = createFileRoute('/register/')({
   beforeLoad: async ({ context }) => {
     try {
       const user = await context.queryClient.getQueryData(['auth-user'])
