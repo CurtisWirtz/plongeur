@@ -6,8 +6,16 @@ export const loginSchema = z.object({
   website: z.string().max(0).optional(),
   password: z.string().min(3, "Password must be at least 3 characters"),
 });
-
 export type LoginSchemaType = z.infer<typeof loginSchema>;
+
+export const reserveEmailSchema = z.object({
+    email: z.email().min(5, "Email must be at least 5 characters").max(150, "Email must be less than 150 characters"),
+    // Honeypot trap #1: Simple hidden input that must be blank
+    website: z.string().max(0).optional(),
+    // Honeypot trap #2: This value must match the "captcha" value generated on the backend and injected via Javascript
+    confirm_email: z.string().min(1, "Verification failed."),
+});
+export type ReserveEmailSchemaType = z.infer<typeof reserveEmailSchema>;
 
 export const registerSchema = z.object({
     email: z.email().min(5, "Email must be at least 5 characters").max(150, "Email must be less than 150 characters"),
@@ -21,5 +29,4 @@ export const registerSchema = z.object({
   message: "Passwords do not match",
   path: ["confirm_password"], // this path will attach the error to the confirmPassword field
 });
-
 export type RegisterSchemaType = z.infer<typeof registerSchema>;
