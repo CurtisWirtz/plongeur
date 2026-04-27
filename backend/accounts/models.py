@@ -20,7 +20,7 @@ class UnverifiedUser(models.Model):
     @property
     def is_expired(self):
         """Returns True if the record is older than 24 hours"""
-        return timezone.now() > (self.created_at + timedelta(day=1))
+        return timezone.now() > (self.created_at + timedelta(days=1))
 
     class Meta:
         verbose_name = "Unverified User"
