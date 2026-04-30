@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view, permission_classes
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth import authenticate, login, logout
-from .serializers import UserSerializer, ReserveEmailSerializer, VerifyEmailSerializer
+from .serializers import UserSerializer, ReserveEmailSerializer, VerifyEmailSerializer, FinalizeSerializer
 from django.contrib.auth import get_user_model
 from .models import UnverifiedUser
 import random
@@ -143,8 +143,62 @@ class VerifyAPIView(APIView):
         )
 
         if serializer.is_valid():
+            request.session['finalize'] = True
             # Success
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        # If invalid, return specific field errors
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class FinalizeAPIView(APIView):
+    permission_classes=[AllowAny]
+
+    @method_decorator(ensure_csrf_cookie)
+    def get(self, request):
+        """
+        Check if the current session has a pending email registration and is set ready to finalize from the user entering a valid OTP.
+        This is used by the TanStack Router Loader guard for the last registration step at /registration/finalize 
+        """
+        email = request.session.get('pending_email')
+        # this session value is set when an UnverifiedUser verifies their OTP
+        finalize = request.session.get('finalize')
+        
+        # Check if the email exists in the session AND the DB
+        if finalize and email and UnverifiedUser.objects.filter(email=email).exists():
+            return Response({
+                "finalize": True,
+                "email": email
+            }, status=status.HTTP_200_OK)
+        
+        return Response({
+            "finalize": False
+        }, status=status.HTTP_403_FORBIDDEN)
+    
+    @method_decorator(ensure_csrf_cookie)
+    def post(self, request):
+        serializer = FinalizeSerializer(
+            data=request.data,
+            context={'request': request} # give the serializer access to the session data (pending_email and finalize)
+        )
+
+        if serializer.is_valid():
+            # Success. Creating account of verified user!
+            user = serializer.save() # calls create() in serializer
+
+            # Delete the UnverifiedUser!
+            UnverifiedUser.objects.filter(email=user.email).delete()
+
+            # Remove the data that won't be needed
+            request.session.pop('pending_email', None)
+            request.session.pop('finalize', None)
+            
+            login(request, user)
+            return Response({
+                "success": True,
+                "email": user.email,
+                "message": "Account created!"
+            }, status=status.HTTP_201_CREATED)
         
         # If invalid, return specific field errors
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
