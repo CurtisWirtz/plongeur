@@ -71,3 +71,36 @@ class ReserveEmailSerializer(serializers.ModelSerializer):
         # Create the new UnverifiedUser
         return UnverifiedUser.objects.create(**validated_data)
     
+class VerifyEmailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UnverifiedUser
+        fields = ['OTP']
+
+    def validate(self, data):
+        request = self.context.get('request')
+        pending_email = request.session.get('pending_email')
+
+        # Check if the session exists
+        if not pending_email:
+            raise serializers.ValidationError("Session expired. Please restart.")
+
+        print("THEEMAIL: ", pending_email)
+        print('thedata: ', data)
+        if UnverifiedUser.objects.filter(email=pending_email).exists():
+            # Look up the UnverifiedUser with that email
+            try:
+                pending_user = UnverifiedUser.objects.get(email=pending_email)
+            except UnverifiedUser.DoesNotExist:
+                raise serializers.ValidationError("No registration found for this email.")
+
+            # Check to see if the OTP has expired
+            if pending_user.is_expired:
+                pending_user.delete()
+                raise serializers.ValidationError("Code expired. Please try again.")
+        
+            # Validate OTP submitted matches the OTP on record for the UnverifiedUser claiming that email
+            if data.get('OTP') != pending_user.OTP:
+                raise serializers.ValidationError({"The code you entered is incorrect."})
+            
+            return data
+        

@@ -111,3 +111,41 @@ class ReserveEmailAPIView(APIView):
         # If invalid, it returns specific field errors
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class VerifyAPIView(APIView):
+    permission_classes=[AllowAny]
+
+    @method_decorator(ensure_csrf_cookie)
+    def get(self, request):
+        """
+        Check if the current session has a pending email registration.
+        This is used by the TanStack Router Loader guard for registration step at /registration/verify (OTP screen)
+        """
+        # this session data is set when an UnverifiedUser registers their email
+        email = request.session.get('pending_email')
+        
+        # Check if the email exists in the session AND the DB
+        if email and UnverifiedUser.objects.filter(email=email).exists():
+            return Response({
+                "verifying": True,
+                "email": email
+            }, status=status.HTTP_200_OK)
+        
+        return Response({
+            "verifying": False
+        }, status=status.HTTP_403_FORBIDDEN)
+    
+    @method_decorator(ensure_csrf_cookie)
+    def post(self, request):
+        serializer = VerifyEmailSerializer(
+            data=request.data,
+            context={'request': request} # give the serializer access to the session data (pending_email)
+        )
+
+        if serializer.is_valid():
+            # Success
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        # If invalid, return specific field errors
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
