@@ -106,6 +106,9 @@ class ReserveEmailAPIView(APIView):
 
             # save the pending email to session data so the /register/verify route loader guard can authorize being the user navigating to that page 
             request.session['pending_email'] = pending_user.email
+            # mark the user as being ready for the verifying step session data
+            request.session['verifying'] = True
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
         # If invalid, it returns specific field errors
@@ -127,7 +130,7 @@ class VerifyAPIView(APIView):
         # Check if the email exists in the session AND the DB
         if email and UnverifiedUser.objects.filter(email=email).exists():
             return Response({
-                "verifying": True,
+                "verifying": request.session.get('verifying'),
                 "email": email
             }, status=status.HTTP_200_OK)
         
@@ -143,6 +146,8 @@ class VerifyAPIView(APIView):
         )
 
         if serializer.is_valid():
+            # mark finalize to true in session data, and unmark verifying since the user is now past that step 
+            request.session.pop('verifying', None)
             request.session['finalize'] = True
             # Success
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -189,7 +194,7 @@ class FinalizeAPIView(APIView):
             # Delete the UnverifiedUser!
             UnverifiedUser.objects.filter(email=user.email).delete()
 
-            # Remove the data that won't be needed
+            # Remove the session data used for tracking registration/progress that won't be needed
             request.session.pop('pending_email', None)
             request.session.pop('finalize', None)
             
