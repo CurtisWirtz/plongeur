@@ -17,6 +17,11 @@ export const reserveEmailSchema = z.object({
 });
 export type ReserveEmailSchemaType = z.infer<typeof reserveEmailSchema>;
 
+export const verifyRegistrationSchema = z.object({
+    OTP: z.string().length(6, "Invalid verification code.").regex(/^[0-9a-fA-F]+$/, "Invalid verification code."),
+});
+export type VerifyRegistrationSchemaType = z.infer<typeof verifyRegistrationSchema>;
+
 export const registerSchema = z.object({
     email: z.email().min(5, "Email must be at least 5 characters").max(150, "Email must be less than 150 characters"),
     password: z.string().min(3, "Password must be at least 3 characters"),
