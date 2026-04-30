@@ -84,8 +84,6 @@ class VerifyEmailSerializer(serializers.ModelSerializer):
         if not pending_email:
             raise serializers.ValidationError("Session expired. Please restart.")
 
-        print("THEEMAIL: ", pending_email)
-        print('thedata: ', data)
         if UnverifiedUser.objects.filter(email=pending_email).exists():
             # Look up the UnverifiedUser with that email
             try:
@@ -93,7 +91,7 @@ class VerifyEmailSerializer(serializers.ModelSerializer):
             except UnverifiedUser.DoesNotExist:
                 raise serializers.ValidationError("No registration found for this email.")
 
-            # Check to see if the OTP has expired
+            # Check to see if the OTP has expired, if it has delete that UnverifiedUser
             if pending_user.is_expired:
                 pending_user.delete()
                 raise serializers.ValidationError("Code expired. Please try again.")
@@ -103,4 +101,37 @@ class VerifyEmailSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError({"The code you entered is incorrect."})
             
             return data
+        
+class FinalizeSerializer(serializers.Serializer):
+    # Password is write_only so it's never sent back in a request
+    password = serializers.CharField(write_only=True)
+    first_name = serializers.CharField(max_length=150, required=False, allow_blank=True)
+    last_name = serializers.CharField(max_length=150, required=False, allow_blank=True)
+    phone_number = serializers.CharField(max_length=150, allow_blank=True, allow_null=True)
+
+    def validate(self, data):
+        request = self.context.get('request')
+        email = request.session.get('pending_email')
+        lowercase_email = email.strip().lower()
+        finalize = request.session.get('finalize')
+
+        if not finalize:
+            raise serializers.ValidationError("Unauthorized session. Please restart registration.")
+
+        if not lowercase_email:
+            raise serializers.ValidationError("Session expired. Please restart registration.")
+        
+        # One last check to see if that email doesn't already belong to a registered user
+        if User.objects.filter(email=lowercase_email).exists():
+            raise serializers.ValidationError("User with that email already exists.")
+        
+        # Take email from session and pass it to the data object we will construct the new user with
+        data['email'] = lowercase_email
+
+        # Pass along the freshly validated data
+        return data
+    
+    def create(self, validated_data):
+        # Create the user using Django's recommended create_user method, create_user handles the password hashing automatically
+        return User.objects.create_user(**validated_data)
         
