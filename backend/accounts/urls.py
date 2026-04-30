@@ -8,4 +8,5 @@ urlpatterns = [
     path('logout/', views.logout_user, name='logout'),
     path('register/reserve-email/', views.ReserveEmailAPIView.as_view()),
     path('register/verify/', views.VerifyAPIView.as_view()),
+    path('register/finalize/', views.FinalizeAPIView.as_view()),
 ]
