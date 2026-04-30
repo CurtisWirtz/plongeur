@@ -6,8 +6,9 @@ from rest_framework.decorators import api_view, permission_classes
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth import authenticate, login, logout
-from .serializers import UserSerializer, RegisterUserSerializer
+from .serializers import UserSerializer, ReserveEmailSerializer, VerifyEmailSerializer
 from django.contrib.auth import get_user_model
+from .models import UnverifiedUser
 import random
 import string
 
@@ -75,24 +76,6 @@ def logout_user(request):
     logout(request)
     return Response({"detail": "Successfully logged out."}, status=200)
 
-class RegisterView(APIView):
-    permission_classes = [AllowAny]
-
-    def post(self, request):
-        serializer = RegisterUserSerializer(
-            data=request.data,
-            context={'request': request} # critical for the honeypot_key
-        )
-
-        # is_valid() will catch if the email is already in use
-        if serializer.is_valid():
-            user = serializer.save() # calls create() in serializer
-            login(request, user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
-        # If invalid, it returns specific field errors
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 @api_view(['GET'])
 @ensure_csrf_cookie
 @permission_classes([AllowAny])
@@ -101,9 +84,30 @@ def get_honeypot(request):
     rando_string = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
     # give it an email format
     honeypot_key = rando_string + '@gmail.com'
-
-    print(honeypot_key)
     
     # Store it in the session (requires SessionMiddleware)
     request.session['honeypot_key'] = honeypot_key
     return Response({'honeypot_key': honeypot_key})
+
+class ReserveEmailAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = ReserveEmailSerializer(
+            data=request.data,
+            context={'request': request} # critical for passing the honeypot_key to serializer for validation
+        )
+
+        # serializer.is_valid() will catch if the email is already in use by either a verified or unverified user.
+        # the serializer also checks honeypots, and if they pass, it removes the honeypot key from session. A user cannot pass further without that key.
+        if serializer.is_valid():
+            # create the UnverifiedUser and clear the honeypot data 
+            pending_user = serializer.save() # calls create() in serializer
+
+            # save the pending email to session data so the /register/verify route loader guard can authorize being the user navigating to that page 
+            request.session['pending_email'] = pending_user.email
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        # If invalid, it returns specific field errors
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
