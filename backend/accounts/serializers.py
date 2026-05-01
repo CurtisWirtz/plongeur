@@ -98,7 +98,7 @@ class VerifyEmailSerializer(serializers.ModelSerializer):
         
             # Validate OTP submitted matches the OTP on record for the UnverifiedUser claiming that email
             if data.get('OTP') != pending_user.OTP:
-                raise serializers.ValidationError({"The code you entered is incorrect."})
+                raise serializers.ValidationError({"OTP": "The code you entered is incorrect."})
             
             return data
         
