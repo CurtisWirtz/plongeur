@@ -134,4 +134,3 @@ class FinalizeSerializer(serializers.Serializer):
     def create(self, validated_data):
         # Create the user using Django's recommended create_user method, create_user handles the password hashing automatically
         return User.objects.create_user(**validated_data)
-        
