@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+const nameRegex = /^[a-zA-Zà-ÿÀ-ß\s'-]+$/;
+
 export const loginSchema = z.object({
   email: z.email().min(5, "Email must be at least 5 characters").max(150, "Email must be less than 150 characters"),
   // simple honeypot, needs to be blank on submission
@@ -40,10 +42,15 @@ export const finalizeRegistrationSchema = z.object({
     email: z.email().min(5, "Email must be at least 5 characters").max(150, "Email must be less than 150 characters"),
     password: z.string().min(3, "Password must be at least 3 characters"),
     confirm_password: z.string().min(3, "Password must be at least 3 characters"),
-    // Honeypot trap #1: Simple hidden input that must be blank
-    website: z.string().max(0).optional(),
-    // Honeypot trap #2: This value must match the "captcha" value generated on the backend and injected via Javascript
-    confirm_email: z.string().min(1, "Verification failed."),
+  first_name: z.string()
+    .max(150, "First name cannot exceed 150 characters.")
+    .regex(nameRegex, "Name contains invalid characters")
+    .optional(),
+  last_name: z.string()
+    .max(150, "First name cannot exceed 150 characters.")
+    .regex(nameRegex, "Name contains invalid characters")
+    .optional(),
+  phone_number: z.string().max(150, "First name cannot exceed 150 characters.").optional(),
 }).refine((data) => data.password === data.confirm_password, {
   message: "Passwords do not match",
   path: ["confirm_password"], // this path will attach the error to the confirmPassword field
