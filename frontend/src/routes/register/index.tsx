@@ -1,15 +1,15 @@
 import { createFileRoute, redirect, isRedirect } from '@tanstack/react-router'
-import Register from '@/components/Register'
+import ReserveEmail from '@/components/Register/ReserveEmail'
 import { Spinner } from '@/components/ui/spinner'
 import { fetchHoneypot } from '@/api/auth'
 
-export const Route = createFileRoute('/register')({
+export const Route = createFileRoute('/register/')({
   beforeLoad: async ({ context }) => {
     try {
       const user = await context.queryClient.getQueryData(['auth-user'])
 
       if (user) { 
-        // inside a try/catch block, this throws and error, but we can catch the error type and redirect there!
+        // inside a try/catch block, this technically throws an error, but we can catch the error type and redirect from there!
         throw redirect({ to: '/' }) 
       }
     } catch (err) {
@@ -18,7 +18,7 @@ export const Route = createFileRoute('/register')({
       return // If there's an error (..amybe a 401), we just ignore it and allow the user to see the register page
     }
   },
-  component: Register,
+  component: ReserveEmail,
   loader: async ({ context }) => {
     await context.queryClient.ensureQueryData({
       queryKey: ['honeypot'],

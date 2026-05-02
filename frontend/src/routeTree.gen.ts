@@ -9,17 +9,14 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as RegisterIndexRouteImport } from './routes/register/index'
+import { Route as RegisterVerifyIndexRouteImport } from './routes/register/verify/index'
+import { Route as RegisterFinalizeIndexRouteImport } from './routes/register/finalize/index'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard/index'
 
-const RegisterRoute = RegisterRouteImport.update({
-  id: '/register',
-  path: '/register',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -34,6 +31,21 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RegisterIndexRoute = RegisterIndexRouteImport.update({
+  id: '/register/',
+  path: '/register/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterVerifyIndexRoute = RegisterVerifyIndexRouteImport.update({
+  id: '/register/verify/',
+  path: '/register/verify/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterFinalizeIndexRoute = RegisterFinalizeIndexRouteImport.update({
+  id: '/register/finalize/',
+  path: '/register/finalize/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedDashboardIndexRoute =
   AuthenticatedDashboardIndexRouteImport.update({
     id: '/dashboard/',
@@ -44,53 +56,68 @@ const AuthenticatedDashboardIndexRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/register': typeof RegisterRoute
+  '/register/': typeof RegisterIndexRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/register/finalize/': typeof RegisterFinalizeIndexRoute
+  '/register/verify/': typeof RegisterVerifyIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/register': typeof RegisterRoute
+  '/register': typeof RegisterIndexRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
+  '/register/finalize': typeof RegisterFinalizeIndexRoute
+  '/register/verify': typeof RegisterVerifyIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
-  '/register': typeof RegisterRoute
+  '/register/': typeof RegisterIndexRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/register/finalize/': typeof RegisterFinalizeIndexRoute
+  '/register/verify/': typeof RegisterVerifyIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/register' | '/dashboard/'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/register/'
+    | '/dashboard/'
+    | '/register/finalize/'
+    | '/register/verify/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/register' | '/dashboard'
+  to:
+    | '/'
+    | '/login'
+    | '/register'
+    | '/dashboard'
+    | '/register/finalize'
+    | '/register/verify'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/login'
-    | '/register'
+    | '/register/'
     | '/_authenticated/dashboard/'
+    | '/register/finalize/'
+    | '/register/verify/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
-  RegisterRoute: typeof RegisterRoute
+  RegisterIndexRoute: typeof RegisterIndexRoute
+  RegisterFinalizeIndexRoute: typeof RegisterFinalizeIndexRoute
+  RegisterVerifyIndexRoute: typeof RegisterVerifyIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/register': {
-      id: '/register'
-      path: '/register'
-      fullPath: '/register'
-      preLoaderRoute: typeof RegisterRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -110,6 +137,27 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register/': {
+      id: '/register/'
+      path: '/register'
+      fullPath: '/register/'
+      preLoaderRoute: typeof RegisterIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register/verify/': {
+      id: '/register/verify/'
+      path: '/register/verify'
+      fullPath: '/register/verify/'
+      preLoaderRoute: typeof RegisterVerifyIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register/finalize/': {
+      id: '/register/finalize/'
+      path: '/register/finalize'
+      fullPath: '/register/finalize/'
+      preLoaderRoute: typeof RegisterFinalizeIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/dashboard/': {
@@ -138,7 +186,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
-  RegisterRoute: RegisterRoute,
+  RegisterIndexRoute: RegisterIndexRoute,
+  RegisterFinalizeIndexRoute: RegisterFinalizeIndexRoute,
+  RegisterVerifyIndexRoute: RegisterVerifyIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
