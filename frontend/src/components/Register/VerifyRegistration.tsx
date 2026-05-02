@@ -45,8 +45,7 @@ const VerifyRegistration = () => {
     const {mutate, isPending, error} = useVerifyRegistration()
 
     const onSubmit = (data: VerifyRegistrationSchemaType) => {
-        // Fire the mutation from the useReserveEmail hook
-        console.log('data right b4 mutate', data)
+        // Fire the mutation from the useVerifyRegistration hook
         mutate(data)
     }
 
