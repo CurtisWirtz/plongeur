@@ -7,13 +7,13 @@ export const Route = createFileRoute('/register/verify/')({
   loader: async () => {
     try {
       const response = await api.get('/accounts/register/verify/')
-
-      // check if the backend set verifying to True 
-      if (response.data.verifying) {
+      
+      // check if the backend set verifying to true 
+      if (response.data.verifying === true) {
         return response.data
         
       } else {
-        // backend did not set verifying to True
+        // backend did not set verifying to true
         throw redirect({ 
           to: '/register'}
         )
