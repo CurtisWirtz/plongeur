@@ -199,12 +199,12 @@ class FinalizeAPIView(APIView):
             request.session.pop('finalize', None)
             
             login(request, user)
+
             return Response({
                 "success": True,
-                "email": user.email,
-                "message": "Account created!"
+                "message": "Account created!",
+                "user": UserSerializer(user).data
             }, status=status.HTTP_201_CREATED)
         
         # If invalid, return specific field errors
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
