@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RegisterIndexRouteImport } from './routes/register/index'
 import { Route as RegisterVerifyIndexRouteImport } from './routes/register/verify/index'
+import { Route as RegisterFinalizeIndexRouteImport } from './routes/register/finalize/index'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard/index'
 
 const LoginRoute = LoginRouteImport.update({
@@ -40,6 +41,11 @@ const RegisterVerifyIndexRoute = RegisterVerifyIndexRouteImport.update({
   path: '/register/verify/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RegisterFinalizeIndexRoute = RegisterFinalizeIndexRouteImport.update({
+  id: '/register/finalize/',
+  path: '/register/finalize/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedDashboardIndexRoute =
   AuthenticatedDashboardIndexRouteImport.update({
     id: '/dashboard/',
@@ -52,6 +58,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/register/': typeof RegisterIndexRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/register/finalize/': typeof RegisterFinalizeIndexRoute
   '/register/verify/': typeof RegisterVerifyIndexRoute
 }
 export interface FileRoutesByTo {
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/register': typeof RegisterIndexRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
+  '/register/finalize': typeof RegisterFinalizeIndexRoute
   '/register/verify': typeof RegisterVerifyIndexRoute
 }
 export interface FileRoutesById {
@@ -68,13 +76,26 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/register/': typeof RegisterIndexRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/register/finalize/': typeof RegisterFinalizeIndexRoute
   '/register/verify/': typeof RegisterVerifyIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/register/' | '/dashboard/' | '/register/verify/'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/register/'
+    | '/dashboard/'
+    | '/register/finalize/'
+    | '/register/verify/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/register' | '/dashboard' | '/register/verify'
+  to:
+    | '/'
+    | '/login'
+    | '/register'
+    | '/dashboard'
+    | '/register/finalize'
+    | '/register/verify'
   id:
     | '__root__'
     | '/'
@@ -82,6 +103,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register/'
     | '/_authenticated/dashboard/'
+    | '/register/finalize/'
     | '/register/verify/'
   fileRoutesById: FileRoutesById
 }
@@ -90,6 +112,7 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
   RegisterIndexRoute: typeof RegisterIndexRoute
+  RegisterFinalizeIndexRoute: typeof RegisterFinalizeIndexRoute
   RegisterVerifyIndexRoute: typeof RegisterVerifyIndexRoute
 }
 
@@ -130,6 +153,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterVerifyIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/register/finalize/': {
+      id: '/register/finalize/'
+      path: '/register/finalize'
+      fullPath: '/register/finalize/'
+      preLoaderRoute: typeof RegisterFinalizeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/dashboard/': {
       id: '/_authenticated/dashboard/'
       path: '/dashboard'
@@ -157,6 +187,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
   RegisterIndexRoute: RegisterIndexRoute,
+  RegisterFinalizeIndexRoute: RegisterFinalizeIndexRoute,
   RegisterVerifyIndexRoute: RegisterVerifyIndexRoute,
 }
 export const routeTree = rootRouteImport
