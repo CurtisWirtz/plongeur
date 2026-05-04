@@ -16,6 +16,9 @@ const useFinalizeRegistration = () => {
         onSuccess: (data) => {
             console.log("Congratulations, you're a fully vetted user!");
 
+            queryClient.invalidateQueries({ queryKey: ['honeypot'] });
+            queryClient.removeQueries({ queryKey: ['honeypot'] });
+            
             // No need for an additional auth request, as the user object is already present in the response data
             // Also, no need to invalidate queries for auth-user because the loader guard (/accounts/user) endpoint returns the identically structured user object
             queryClient.setQueryData(['auth-user'], data.user)

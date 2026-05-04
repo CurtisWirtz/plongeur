@@ -130,7 +130,6 @@ class FinalizeSerializer(serializers.Serializer):
         # Clear the honeypot key, do not reuse
         del request.session['honeypot_key']
 
-
         # Pass along the freshly validated data
         return data
     
