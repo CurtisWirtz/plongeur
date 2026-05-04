@@ -92,6 +92,7 @@ def get_honeypot(request):
 class ReserveEmailAPIView(APIView):
     permission_classes = [AllowAny]
 
+    @method_decorator(ensure_csrf_cookie)
     def post(self, request):
         serializer = ReserveEmailSerializer(
             data=request.data,
