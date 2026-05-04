@@ -58,9 +58,6 @@ class ReserveEmailSerializer(serializers.ModelSerializer):
         if data.get('confirm_email') != session_key:
             raise serializers.ValidationError("Bot detected - Confirm Email Field.")
 
-        # Clear the honeypot key, do not reuse
-        del request.session['honeypot_key']
-
         return data
     
     # This method is called by ModelSerializer.save() after validation
@@ -127,6 +124,10 @@ class FinalizeSerializer(serializers.Serializer):
         
         # Take email from session and pass it to the data object we will construct the new user with
         data['email'] = lowercase_email
+
+        # Clear the honeypot key, do not reuse
+        del request.session['honeypot_key']
+
 
         # Pass along the freshly validated data
         return data
