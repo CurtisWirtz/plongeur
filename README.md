@@ -59,3 +59,7 @@ http://localhost:8080
 - production to AWS EC2, S3
 - geolocation access for device
 - django RBAC for user groups to access other user device info
+
+
+thoughts:
+-i dont want to have django admin be accessible to a public URL
