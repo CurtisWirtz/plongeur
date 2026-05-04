@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import UnverifiedUser
+from django.utils import timezone
+import secrets
 
 
 # Since we extended the existing Django user model
@@ -16,6 +18,10 @@ class UserSerializer(serializers.ModelSerializer):
 
 # Used for Input: receives new user data from React (creating new users or updating user fields)
 class ReserveEmailSerializer(serializers.ModelSerializer):
+    # ModelSerializer sees that our email field on the model has a unique constraint, so it'll auto-reject using the same email 
+    # Since we want to simply renew the OTP verification, this line will keep email required, but won't reject the submission flat out
+    email = serializers.EmailField()
+
     # Define the honeypots here so it doesn't look at the user model for these non-existent fields
     website = serializers.CharField(required=False, allow_blank=True, write_only=True)
     confirm_email = serializers.CharField(write_only=True)
@@ -24,24 +30,11 @@ class ReserveEmailSerializer(serializers.ModelSerializer):
         model = UnverifiedUser
         fields = ['email', 'website', 'confirm_email']
 
-    # Check if the email is taken by either a User or UnverifiedUser account 
+    # Check if the email is already taken by a User account
     def validate_email(self, value):
         # First, check the verified User table
         if User.objects.filter(email=value).exists():
-            raise serializers.ValidationError("Email is already in use.")
-        
-        # Next, check the UnverifiedUser table
-        # BTW: the serializer already checks the UnverifiedUser table identified in Meta
-        # BUT if the UnverifiedUser with the email hasn't verified via email in 24 hours, is_expired will be true. Recreate the account (refreshing the is_expired)
-        if UnverifiedUser.objects.filter(email=value).exists():
-            unverified_user = UnverifiedUser.objects.get(email=value)
-
-            if unverified_user.is_expired:
-                # OTP is expired, delete the record so we can generate a new OTP and refresh the expiration date
-                unverified_user.delete()
-            else:
-                # OTP is still active and pending email verification
-                raise serializers.ValidationError("Registration currently pending, check your email for verification code.")
+            raise serializers.ValidationError("That email is already in use.")
         
         return value
 
@@ -65,8 +58,17 @@ class ReserveEmailSerializer(serializers.ModelSerializer):
         validated_data.pop('website', None)
         validated_data.pop('confirm_email', None)
 
-        # Create the new UnverifiedUser
-        return UnverifiedUser.objects.create(**validated_data)
+        # https://docs.djangoproject.com/en/6.0/ref/models/querysets/#update-or-create
+        # If email exists on an UnverifiedUser account, generate a new OTP and reset the created_at time, otherwise create the record
+        obj, created = UnverifiedUser.objects.update_or_create(
+            email=validated_data.get('email'),
+            defaults={
+                'OTP': secrets.token_hex(3), # Force a new code
+                'created_at': timezone.now() # Force the "is_expired" clock to reset
+            }
+        )
+
+        return obj
     
 class VerifyEmailSerializer(serializers.ModelSerializer):
     class Meta:
