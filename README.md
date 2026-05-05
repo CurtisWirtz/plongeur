@@ -49,8 +49,6 @@ http://localhost:8080
 `docker compose exec frontend printenv | grep VITE` tests to see if env variables successfully loaded into the frontend container with the word 'VITE' attached
 
 # TODOS:
-- resend varification code logic - update_or_create. existing unverifieduser record matching email shouldnt be blocking
-- rate limit requests for register flow
 - UI height... absolute positioning only step 1 and 2. UI matching dashboard/profile on step 3
 - end to end testing audit on user security on login/register logic flow
 - 404 page: (notFoundComponent on frontend)
