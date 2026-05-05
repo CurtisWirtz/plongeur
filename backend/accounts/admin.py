@@ -27,6 +27,13 @@ class CustomUserAdmin(UserAdmin):
 class UnverifiedUserAdmin(admin.ModelAdmin):
     list_display = ("email", "OTP", "created_at", "is_expired")
 
+    readonly_fields = ("created_at", "is_expired")
+    fieldsets = (
+        (None, {
+            'fields': ('email', "OTP", "created_at", "is_expired")
+        }),
+    )
+
 # Register your models
 admin.site.register(User, CustomUserAdmin)
 admin.site.register(UnverifiedUser, UnverifiedUserAdmin)

@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import UnverifiedUser
+from django.utils import timezone
+import secrets
 
 
 # Since we extended the existing Django user model
@@ -16,6 +18,10 @@ class UserSerializer(serializers.ModelSerializer):
 
 # Used for Input: receives new user data from React (creating new users or updating user fields)
 class ReserveEmailSerializer(serializers.ModelSerializer):
+    # ModelSerializer sees that our email field on the model has a unique constraint, so it'll auto-reject using the same email 
+    # Since we want to simply renew the OTP verification, this line will keep email required, but won't reject the submission flat out
+    email = serializers.EmailField()
+
     # Define the honeypots here so it doesn't look at the user model for these non-existent fields
     website = serializers.CharField(required=False, allow_blank=True, write_only=True)
     confirm_email = serializers.CharField(write_only=True)
@@ -24,24 +30,11 @@ class ReserveEmailSerializer(serializers.ModelSerializer):
         model = UnverifiedUser
         fields = ['email', 'website', 'confirm_email']
 
-    # Check if the email is taken by either a User or UnverifiedUser account 
+    # Check if the email is already taken by a User account
     def validate_email(self, value):
         # First, check the verified User table
         if User.objects.filter(email=value).exists():
-            raise serializers.ValidationError("Email is already in use.")
-        
-        # Next, check the UnverifiedUser table
-        # BTW: the serializer already checks the UnverifiedUser table identified in Meta
-        # BUT if the UnverifiedUser with the email hasn't verified via email in 24 hours, is_expired will be true. Recreate the account (refreshing the is_expired)
-        if UnverifiedUser.objects.filter(email=value).exists():
-            unverified_user = UnverifiedUser.objects.get(email=value)
-
-            if unverified_user.is_expired:
-                # OTP is expired, delete the record so we can generate a new OTP and refresh the expiration date
-                unverified_user.delete()
-            else:
-                # OTP is still active and pending email verification
-                raise serializers.ValidationError("Registration currently pending, check your email for verification code.")
+            raise serializers.ValidationError("That email is already in use.")
         
         return value
 
@@ -58,9 +51,6 @@ class ReserveEmailSerializer(serializers.ModelSerializer):
         if data.get('confirm_email') != session_key:
             raise serializers.ValidationError("Bot detected - Confirm Email Field.")
 
-        # Clear the honeypot key, do not reuse
-        del request.session['honeypot_key']
-
         return data
     
     # This method is called by ModelSerializer.save() after validation
@@ -68,8 +58,17 @@ class ReserveEmailSerializer(serializers.ModelSerializer):
         validated_data.pop('website', None)
         validated_data.pop('confirm_email', None)
 
-        # Create the new UnverifiedUser
-        return UnverifiedUser.objects.create(**validated_data)
+        # https://docs.djangoproject.com/en/6.0/ref/models/querysets/#update-or-create
+        # If email exists on an UnverifiedUser account, generate a new OTP and reset the created_at time, otherwise create the record
+        obj, created = UnverifiedUser.objects.update_or_create(
+            email=validated_data.get('email'),
+            defaults={
+                'OTP': secrets.token_hex(3), # Force a new code
+                'created_at': timezone.now() # Force the "is_expired" clock to reset
+            }
+        )
+
+        return obj
     
 class VerifyEmailSerializer(serializers.ModelSerializer):
     class Meta:
@@ -82,20 +81,19 @@ class VerifyEmailSerializer(serializers.ModelSerializer):
 
         # Check if the session exists
         if not pending_email:
-            raise serializers.ValidationError("Session expired. Please restart.")
+            raise serializers.ValidationError({"OTP": "Session expired. Please restart."})
 
         if UnverifiedUser.objects.filter(email=pending_email).exists():
             # Look up the UnverifiedUser with that email
             try:
                 pending_user = UnverifiedUser.objects.get(email=pending_email)
             except UnverifiedUser.DoesNotExist:
-                raise serializers.ValidationError("No registration found for this email.")
+                raise serializers.ValidationError({"OTP": "No registration found for this email."})
 
             # Check to see if the OTP has expired, if it has delete that UnverifiedUser
             if pending_user.is_expired:
-                pending_user.delete()
-                raise serializers.ValidationError("Code expired. Please try again.")
-        
+                raise serializers.ValidationError({"OTP": "Your verification code has expired."})
+            
             # Validate OTP submitted matches the OTP on record for the UnverifiedUser claiming that email
             if data.get('OTP') != pending_user.OTP:
                 raise serializers.ValidationError({"OTP": "The code you entered is incorrect."})
@@ -127,6 +125,9 @@ class FinalizeSerializer(serializers.Serializer):
         
         # Take email from session and pass it to the data object we will construct the new user with
         data['email'] = lowercase_email
+
+        # Clear the honeypot key, do not reuse
+        del request.session['honeypot_key']
 
         # Pass along the freshly validated data
         return data

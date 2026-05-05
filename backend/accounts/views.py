@@ -11,6 +11,7 @@ from django.contrib.auth import get_user_model
 from .models import UnverifiedUser
 import random
 import string
+from rest_framework.throttling import AnonRateThrottle
 
 
 User = get_user_model()
@@ -89,9 +90,14 @@ def get_honeypot(request):
     request.session['honeypot_key'] = honeypot_key
     return Response({'honeypot_key': honeypot_key})
 
+class RegisterThrottle(AnonRateThrottle):
+    rate = '100/day' # Allow 100 attempts per day per IP
+
 class ReserveEmailAPIView(APIView):
     permission_classes = [AllowAny]
+    throttle_classes = [RegisterThrottle]
 
+    @method_decorator(ensure_csrf_cookie)
     def post(self, request):
         serializer = ReserveEmailSerializer(
             data=request.data,
@@ -99,7 +105,8 @@ class ReserveEmailAPIView(APIView):
         )
 
         # serializer.is_valid() will catch if the email is already in use by either a verified or unverified user.
-        # the serializer also checks honeypots, and if they pass, it removes the honeypot key from session. A user cannot pass further without that key.
+        # The serializer also checks honeypot activity, and if they pass, it removes the honeypot key from session data. 
+        # A user cannot pass further without that honeypot key.
         if serializer.is_valid():
             # create the UnverifiedUser and clear the honeypot data 
             pending_user = serializer.save() # calls create() in serializer
@@ -117,6 +124,7 @@ class ReserveEmailAPIView(APIView):
 
 class VerifyAPIView(APIView):
     permission_classes=[AllowAny]
+    throttle_classes = [RegisterThrottle]
 
     @method_decorator(ensure_csrf_cookie)
     def get(self, request):
@@ -158,6 +166,7 @@ class VerifyAPIView(APIView):
 
 class FinalizeAPIView(APIView):
     permission_classes=[AllowAny]
+    throttle_classes = [RegisterThrottle]
 
     @method_decorator(ensure_csrf_cookie)
     def get(self, request):

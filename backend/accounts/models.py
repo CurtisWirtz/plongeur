@@ -19,8 +19,8 @@ class UnverifiedUser(models.Model):
     # email will be reserved for 24 hours, then expires
     @property
     def is_expired(self):
-        """Returns True if the record is older than 24 hours"""
-        return timezone.now() > (self.created_at + timedelta(days=1))
+        """Returns True if the record is older than 15 minutes"""
+        return timezone.now() > (self.created_at + timedelta(minutes=15))
 
     class Meta:
         verbose_name = "Unverified User"
