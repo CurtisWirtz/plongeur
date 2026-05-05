@@ -81,20 +81,19 @@ class VerifyEmailSerializer(serializers.ModelSerializer):
 
         # Check if the session exists
         if not pending_email:
-            raise serializers.ValidationError("Session expired. Please restart.")
+            raise serializers.ValidationError({"OTP": "Session expired. Please restart."})
 
         if UnverifiedUser.objects.filter(email=pending_email).exists():
             # Look up the UnverifiedUser with that email
             try:
                 pending_user = UnverifiedUser.objects.get(email=pending_email)
             except UnverifiedUser.DoesNotExist:
-                raise serializers.ValidationError("No registration found for this email.")
+                raise serializers.ValidationError({"OTP": "No registration found for this email."})
 
             # Check to see if the OTP has expired, if it has delete that UnverifiedUser
             if pending_user.is_expired:
-                pending_user.delete()
-                raise serializers.ValidationError("Code expired. Please try again.")
-        
+                raise serializers.ValidationError({"OTP": "Your verification code has expired."})
+            
             # Validate OTP submitted matches the OTP on record for the UnverifiedUser claiming that email
             if data.get('OTP') != pending_user.OTP:
                 raise serializers.ValidationError({"OTP": "The code you entered is incorrect."})
