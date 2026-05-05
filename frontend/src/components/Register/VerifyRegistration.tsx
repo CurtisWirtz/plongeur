@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, Controller } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { capitalized } from '@/lib/utils'
-import { RefreshCwIcon } from "lucide-react"
+import ResendOTP from '@/components/Register/ResendOTP'
 
 import { 
   Card,
@@ -68,9 +68,7 @@ const VerifyRegistration = () => {
                             <Field data-invalid={fieldState.invalid}>
                               <div className="flex items-center justify-between">
                                 <FieldLabel htmlFor="otp" className="w-full mb-2 justify-center">Enter the verification code:</FieldLabel>
-                                <Button variant="secondary" size="xs" type="button" className="-translate-y-1 text-sm hover:shadow-2xl transition-all duration-200 ease-in-out">
-                                  <RefreshCwIcon className="mr-1" /> Resend Code
-                                </Button>
+                                <ResendOTP email={loaderData.email}/>
                               </div>
                               <div className="flex justify-center">
                                 <InputOTP
