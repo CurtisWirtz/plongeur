@@ -48,12 +48,12 @@ const FinalizeRegistration = () => {
     }
 
     return (
-        <section className="container relative w-full h-full">
-            <Card className="max-w-100 w-full absolute top-1/2 left-1/2 -translate-1/2">
+        <section className="container w-full h-full">
+            <Card className="max-w-100 w-full mx-auto my-16">
                 <CardHeader>
-                    <CardTitle>Finalize your details for your account {loaderData.email && loaderData.email}</CardTitle>
+                    <CardTitle>Register {loaderData.email && loaderData.email}</CardTitle>
                     <CardDescription>
-                        You can easily edit this info at any point in the future, but right now you must set a password!
+                        Please set a password
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -64,7 +64,7 @@ const FinalizeRegistration = () => {
                                 control={form.control}
                                 render={({ field, fieldState }) => (
                                     <Field data-invalid={fieldState.invalid}>
-                                        <FieldLabel htmlFor="password">Password</FieldLabel>
+                                        <FieldLabel htmlFor="password">Password<sup className="translate-x-1">*</sup></FieldLabel>
                                         <Input 
                                             {...field} 
                                             id="password"
@@ -84,7 +84,7 @@ const FinalizeRegistration = () => {
                                 control={form.control}
                                 render={({ field, fieldState }) => (
                                     <Field data-invalid={fieldState.invalid}>
-                                        <FieldLabel htmlFor="confirm_password">Confirm Password</FieldLabel>
+                                        <FieldLabel htmlFor="confirm_password">Confirm Password<sup className="-translate-x-1">*</sup></FieldLabel>
                                         <Input 
                                             {...field} 
                                             id="confirm_password"

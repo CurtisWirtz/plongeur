@@ -59,8 +59,8 @@ const ReserveEmail = () => {
     }
 
     return (
-        <section className="container relative w-full h-full">
-            <Card className="max-w-100 w-full absolute top-1/2 left-1/2 -translate-1/2">
+        <section className="container w-full h-full">
+            <Card className="max-w-100 w-full mx-auto my-16">
                 <CardHeader>
                     <CardTitle>Signing up is easy:</CardTitle>
                     <CardDescription>
@@ -81,7 +81,7 @@ const ReserveEmail = () => {
                                 control={form.control}
                                 render={({ field, fieldState }) => (
                                     <Field data-invalid={fieldState.invalid}>
-                                        <FieldLabel htmlFor="email">E-Mail</FieldLabel>
+                                        <FieldLabel htmlFor="email">E-Mail<sup className="-translate-x-1">*</sup></FieldLabel>
                                         <Input 
                                             {...field} 
                                             id="email"

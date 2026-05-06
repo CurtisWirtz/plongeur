@@ -50,8 +50,8 @@ const VerifyRegistration = () => {
     }
 
     return (
-      <section className="container relative w-full h-full">
-        <Card className="max-w-100 w-full absolute top-1/2 left-1/2 -translate-1/2">
+      <section className="container w-full h-full">
+        <Card className="max-w-100 w-full mx-auto my-16">
             <CardHeader className="flex flex-col">
               <CardTitle>Check your e-mail{loaderData.email && ", " + loaderData.email}</CardTitle>
               <CardDescription>
