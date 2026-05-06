@@ -49,9 +49,7 @@ http://localhost:8080
 `docker compose exec frontend printenv | grep VITE` tests to see if env variables successfully loaded into the frontend container with the word 'VITE' attached
 
 # TODOS:
-- UI height... absolute positioning only step 1 and 2. UI matching dashboard/profile on step 3
 - end to end testing audit on user security on login/register logic flow
-- 404 page: (notFoundComponent on frontend)
 - docker prune cronjob on production server: every night at 3:00 AM ...using bash? `0 3 * * * /usr/bin/docker system prune -af --volumes`, (addresses the remnant <none> containers that could accumulate and burn up resources). in the meantime, running `docker image prune` will cleanse the dangling containers for development when needed
 - add PWA manifest.json and JS service worker
 - production to AWS EC2, S3
