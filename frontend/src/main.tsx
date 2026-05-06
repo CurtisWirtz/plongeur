@@ -1,8 +1,10 @@
 import { StrictMode } from 'react'
+import type { JSX } from 'react'
 import { createRoot } from 'react-dom/client'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 import './assets/styles/styles.css'
+import notFoundComponent from '@/components/404'
 
 // Import the generated route tree
 import { routeTree } from './routeTree.gen'
@@ -19,6 +21,7 @@ const queryClient = new QueryClient({
 
 interface RouterContext {
   routeTree: typeof routeTree,
+  defaultNotFoundComponent: () => JSX.Element,
   context: {
     queryClient: QueryClient
   }
@@ -27,6 +30,7 @@ interface RouterContext {
 // Create a new router instance
 const router = createRouter({ 
   routeTree,
+  defaultNotFoundComponent: notFoundComponent,
   context: {
     queryClient, // This is where guards and loaders will access the queryClient
   },
