@@ -1,8 +1,17 @@
+import { Button } from '@/components/ui/button'
+import { Link } from '@tanstack/react-router'
+import { House } from 'lucide-react';
+
 const notFoundComponent = () => {
   return (
-    <div className="text-4xl min-h-100">
-        <h1 className="mt-40 text-center">404 error: Page not found.</h1>
-    </div>
+    <section className="container w-full h-full">
+        <header className="max-w-100 w-full mx-auto my-16 flex flex-col items-center">
+            <h1 className="text-2xl text-center mb-7">Lost! 404 error</h1>
+            <Button asChild variant="secondary" className="cursor-pointer hover:shadow-2xl">
+                <Link to="/dashboard"><House />Take me home!</Link>
+            </Button>
+        </header>
+    </section>
   )
 }
 
