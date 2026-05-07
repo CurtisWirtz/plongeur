@@ -7,8 +7,8 @@ const notFoundComponent = () => {
     <section className="container w-full h-full">
         <header className="max-w-100 w-full mx-auto my-16 flex flex-col items-center">
             <h1 className="text-2xl text-center mb-7">Lost! 404 error</h1>
-            <Button asChild variant="secondary" className="cursor-pointer hover:shadow-2xl">
-                <Link to="/dashboard"><House />Take me home!</Link>
+            <Button asChild variant="secondary" className="cursor-pointer shadow-2xl">
+                <Link to="/dashboard" className="border-none"><House />Take me home!</Link>
             </Button>
         </header>
     </section>
