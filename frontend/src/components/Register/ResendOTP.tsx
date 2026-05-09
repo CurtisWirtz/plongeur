@@ -36,7 +36,7 @@ const ResendOTP = ({ email }: { email: string }) => {
             size="xs"
             onClick={handleResend}
             disabled={isPending || isSuccess || !!error}
-            className={`-translate-y-1 text-sm hover:shadow-2xl transition-all duration-300 ${isSuccess && 'bg-green-400'} ${error && 'bg-destructive text-white'}`}
+            className={`unselectable -translate-y-1 text-sm hover:shadow-2xl transition-all duration-300 ${isSuccess && 'bg-green-400'} ${error && 'bg-destructive text-white'}`}
         >          
             {isPending ? (
                     <RefreshCwIcon className="mr-1 h-3 w-3 animate-spin" />

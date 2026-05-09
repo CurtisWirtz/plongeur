@@ -204,3 +204,8 @@
 .container {
   @apply mx-auto w-full px-4 md:px-7 max-w-500;
 }
+
+/* Used for PWA item that users will click, will prevent the user from auto-selecting text, which is a poor user experience on mobile */
+.unselectable {
+   user-select: none;
+}
