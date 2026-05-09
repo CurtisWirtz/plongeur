@@ -30,7 +30,7 @@ const Header = () => {
           <DropdownMenu>
             <DropdownMenuTrigger className="cursor-pointer">
             <Avatar className="shadow-2xl border">
-              <AvatarFallback>
+              <AvatarFallback className="bg-chart-2">
                 <UserRound />
               </AvatarFallback>
             </Avatar>
@@ -51,12 +51,12 @@ const Header = () => {
         ) : (
           <div>
             <Button asChild variant="ghost">
-                <Link to="/register" activeProps={{ className: "bg-secondary dark:text-popover hover:dark:text-primary shadow-2xl" }}>
+              <Link to="/register" activeProps={{ className: "bg-secondary dark:text-popover hover:dark:text-primary shadow-2xl" }}>
                 Register
               </Link>
             </Button>
             <Button asChild variant="ghost">
-                <Link to="/login" activeProps={{ className: "bg-secondary dark:text-popover hover:dark:text-primary shadow-2xl" }}>
+              <Link to="/login" activeProps={{ className: "bg-secondary dark:text-popover hover:dark:text-primary shadow-2xl" }}>
                 Login
               </Link>
             </Button>
