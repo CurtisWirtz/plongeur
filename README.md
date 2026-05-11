@@ -17,10 +17,10 @@ Create a backend super user:
 `docker compose run backend python manage.py createsuperuser`
 
 Backend portal:
-http://localhost:8000/admin
+http://127.0.0.1:8000/admin
 
 View the project in your browser:
-http://localhost:5173/
+http://127.0.0.1:5173/
 
 Stop the containers: 
 Press Ctrl+C in the terminal, followed by the command `docker compose down`.
@@ -34,7 +34,7 @@ Choose your own login credentials: `PGADMIN_DEFAULT_EMAIL` and `PGADMIN_DEFAULT_
 Then run the `docker compose up --build` command again.
 
 PGAdmin4 will now be avilable in your browser at:
-http://localhost:8080
+http://127.0.0.1:8080
 
 - Log in to PGAdmin4 using the values of PGADMIN_DEFAULT_EMAIL and PGADMIN_DEFAULT_PASSWORD set in docker-compose.yml (from .env)
 - Register a new server connection:
